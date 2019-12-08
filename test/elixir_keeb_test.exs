@@ -3,6 +3,6 @@ defmodule ElixirKeebTest do
   doctest ElixirKeeb
 
   test "greets the world" do
-    assert ElixirKeeb.hello() == :world
+    assert [:world, _timestamp] = ElixirKeeb.hello()
   end
 end
