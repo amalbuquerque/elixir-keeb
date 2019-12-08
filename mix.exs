@@ -3,7 +3,7 @@ defmodule ElixirKeeb.MixProject do
 
   @app :elixir_keeb
   @version "0.1.0"
-  @all_targets [:rpi0]
+  @all_targets [:rpi0, :rpi0_hid]
 
   def project do
     [
@@ -50,6 +50,7 @@ defmodule ElixirKeeb.MixProject do
 
       # Dependencies for specific targets
       {:nerves_system_rpi0, "~> 1.8", runtime: false, targets: :rpi0},
+      {:nerves_system_rpi0_hid, path: "../nerves_custom_rpi0", runtime: false, targets: :rpi0_hid}
     ]
   end
 
