@@ -1,25 +1,25 @@
 defmodule ElixirKeeb.Application do
-  # See https://hexdocs.pm/elixir/Application.html
-  # for more information on OTP Applications
   @moduledoc false
 
   use Application
 
   def start(_type, _args) do
-    # See https://hexdocs.pm/elixir/Supervisor.html
-    # for other strategies and supported options
+    initialize(target())
     opts = [strategy: :one_for_one, name: ElixirKeeb.Supervisor]
+
     children =
-      [
-        # Children for all targets
-        # Starts a worker by calling: ElixirKeeb.Worker.start_link(arg)
-        # {ElixirKeeb.Worker, arg},
-      ] ++ children(target())
+      [] ++ children(target())
 
     Supervisor.start_link(children, opts)
   end
 
-  # List all child processes to be supervised
+  def initialize(:host), do: :noop
+  def initialize(_target) do
+    IO.puts("Starting USB HID Gadget...")
+    ElixirKeeb.Usb.Gadget.configure_device()
+    IO.puts("USB HID Gadget configured.")
+  end
+
   def children(:host) do
     [
       # Children that only run on the host
