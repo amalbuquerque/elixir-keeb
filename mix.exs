@@ -48,6 +48,7 @@ defmodule ElixirKeeb.MixProject do
       {:nerves_runtime, "~> 0.6", targets: @all_targets},
       {:nerves_init_gadget, "~> 0.4", targets: @all_targets},
       {:usb_gadget, git: "https://github.com/nerves-project/usb_gadget.git", branch: "master", targets: @all_targets},
+      {:circuits_gpio, "~> 0.4.3", targets: @all_targets},
 
       # Dependencies for specific targets
       {:nerves_system_rpi0, "~> 1.8", runtime: false, targets: :rpi0},
