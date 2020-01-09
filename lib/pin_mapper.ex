@@ -53,9 +53,9 @@ defmodule ElixirKeeb.PinMapper do
   to create the (C) end result.
   """
 
+  alias ElixirKeeb.Utils
   require Logger
 
-  @kc_indexes "0123456789abcdefghijklmnopqrstuvwxyz"
   @disabled_keycode :kc_no
 
   @doc """
@@ -101,7 +101,7 @@ defmodule ElixirKeeb.PinMapper do
         line_index = index_in_pin_list(line_pin, line_pins)
         column_index = index_in_pin_list(column_pin, column_pins)
 
-        kc(line_index, column_index)
+        Utils.kc(line_index, column_index)
       end
     end
   end
@@ -146,15 +146,16 @@ defmodule ElixirKeeb.PinMapper do
   ```
   """
   def pin_matrix(physical_matrix, lines: line_pins, columns: column_pins) do
-    line_pins = zip_with_index(line_pins)
-    column_pins = zip_with_index(column_pins)
+    line_pins = Utils.zip_with_index(line_pins)
+    column_pins = Utils.zip_with_index(column_pins)
 
     for {{line_alias, _line_pin}, line_pin_index} <- line_pins do
       for {{column_alias, _column_pin}, column_pin_index} <- column_pins do
-        exists_in?(physical_matrix, {line_alias, column_alias})
-        |> case do
-          true -> kc(line_pin_index, column_pin_index)
-          _ -> @disabled_keycode
+        case exists_in?(physical_matrix, {line_alias, column_alias}) do
+          true ->
+            Utils.kc(line_pin_index, column_pin_index)
+          _ ->
+            @disabled_keycode
         end
       end
     end
@@ -179,17 +180,24 @@ defmodule ElixirKeeb.PinMapper do
         Enum.map(line, fn keycode -> quoted_var(keycode) end)
       end)
 
+
     pin_matrix = pin_matrix(
       physical_matrix, lines: line_pins, columns: column_pins)
-      |> Enum.map(fn line ->
-        Enum.map(line, fn keycode -> quoted_var(keycode) end)
-      end)
+
+    quoted_pin_matrix = pin_matrix
+                        |> Enum.map(fn line ->
+                          Enum.map(line, fn keycode -> quoted_var(keycode) end)
+                        end)
 
     Logger.debug(inspect(physical_matrix_kc_xy), label: "Physical matrix")
-    Logger.debug(inspect(pin_matrix), label: "Pin matrix")
+    Logger.debug(inspect(quoted_pin_matrix), label: "Pin matrix")
 
     quote do
       def map(unquote(physical_matrix_kc_xy)) do
+        unquote(quoted_pin_matrix)
+      end
+
+      def pin_matrix() do
         unquote(pin_matrix)
       end
     end
@@ -222,21 +230,5 @@ defmodule ElixirKeeb.PinMapper do
         {:cont, acc}
       end
     end)
-  end
-
-  defp zip_with_index(list) do
-    Enum.zip(list, 0..(length(list) - 1))
-  end
-
-  defp kc(line_index, column_index) do
-    line_kc_index = index_to_kc_index(line_index)
-    column_kc_index = index_to_kc_index(column_index)
-
-    String.to_atom("kc_#{line_kc_index}#{column_kc_index}")
-  end
-
-  defp index_to_kc_index(index)
-       when is_integer(index) and index >= 0 and index <= 35 do
-    String.at(@kc_indexes, index)
   end
 end
