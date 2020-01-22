@@ -1,8 +1,17 @@
 defmodule ElixirKeeb.Utils do
   @kc_indexes "0123456789abcdefghijklmnopqrstuvwxyz"
 
-  def zip_with_index(list) do
-    Enum.zip(list, 0..(length(list) - 1))
+  def get_config_or_raise(config_key) do
+      value =
+        Application.get_env(:elixir_keeb, config_key) ||
+          raise("Please set the `:elixir_keeb, :#{config_key}` configuration entry")
+
+      {config_key, value}
+  end
+
+  def zip_with_index(list, start_pos \\ 0) do
+    Enum.zip(
+      list, start_pos..(start_pos + length(list) - 1))
   end
 
   def zip_matrices(
