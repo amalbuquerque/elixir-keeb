@@ -12,6 +12,8 @@ defmodule ElixirKeeb.Usb.Gadget do
   @report_descriptor "\x05\x01\x09\x06\xa1\x01\x05\x07\x19\xe0\x29\xe7\x15\x00\x25\x01\x75\x01\x95\x08\x81\x02\x95\x01\x75\x08\x81\x03\x95\x05\x75\x01\x05\x08\x19\x01\x29\x05\x91\x02\x95\x01\x75\x03\x91\x03\x95\x06\x75\x08\x15\x00\x25\x65\x05\x07\x19\x00\x29\x65\x81\x00\xc0"
 
   def configure_device do
+    Logger.info("Configuring the USB HID Gadget...")
+
     :ok = USBGadget.create_device(@device_name, %{
       "idVendor" => "0x1d6b",
       "idProduct" => "0x0104",
@@ -50,11 +52,9 @@ defmodule ElixirKeeb.Usb.Gadget do
     {:ok, new_devices} = current_devices()
     [new_device] = new_devices -- existing_devices
 
-    new_device = Path.join(@devices_path, new_device)
+    Logger.info("Just configured device '#{new_device}' as an USB HID gadget.")
 
-    Logger.info("Just configured device #{new_device} as an USB HID gadget.")
-
-    new_device
+    Path.join(@devices_path, new_device)
   end
 
   def raw_write_and_release(device, to_write, time_to_release \\ 10) do
