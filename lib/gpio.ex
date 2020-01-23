@@ -1,5 +1,5 @@
 defmodule ElixirKeeb.Gpio do
-  alias Circuits.GPIO
+  alias Circuits.GPIO, as: CircuitsGPIO
   alias ElixirKeeb.Utils
 
   require Logger
@@ -7,9 +7,9 @@ defmodule ElixirKeeb.Gpio do
   def open_ports(pins, direction) when direction in [:input, :output] do
     pins
     |> Enum.map(fn {matrix_port, pin} ->
-      {:ok, gpio} = GPIO.open(pin, direction)
+      {:ok, gpio} = CircuitsGPIO.open(pin, direction)
 
-      GPIO.set_pull_mode(gpio, :pulldown)
+      CircuitsGPIO.set_pull_mode(gpio, :pulldown)
 
       {matrix_port, gpio}
     end)
