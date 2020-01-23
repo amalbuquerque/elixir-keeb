@@ -1,12 +1,12 @@
 defmodule ElixirKeeb.Gpio.Listener do
   use GenServer
   require Logger
-  alias ElixirKeeb.Gpio
+  alias ElixirKeeb.{Utils, Gpio}
   alias Circuits.GPIO, as: CircuitsGPIO
 
   @default_listener_wait_ms 10
 
-  def start_link() do
+  def start_link(_) do
     config = get_config()
 
     GenServer.start_link(__MODULE__, config, name: __MODULE__)
@@ -17,6 +17,7 @@ defmodule ElixirKeeb.Gpio.Listener do
         [
           line_pins: line_pins,
           column_pins: column_pins,
+          reporter: reporter,
           listener_wait_ms: listener_wait_ms
         ] = args
       ) do
@@ -32,6 +33,7 @@ defmodule ElixirKeeb.Gpio.Listener do
       %{
         line_ports: line_ports,
         column_ports: column_ports,
+        reporter: reporter,
         listener_wait_ms: listener_wait_ms,
         current_matrix: Gpio.initial_matrix(line_pins, column_pins)
       }
@@ -43,16 +45,20 @@ defmodule ElixirKeeb.Gpio.Listener do
     %{
       line_ports: line_ports,
       column_ports: column_ports,
+      reporter: reporter,
       listener_wait_ms: listener_wait_ms,
       current_matrix: current_matrix
     } = state) do
 
     new_matrix = Gpio.scan_matrix(line_ports, column_ports, listener_wait_ms)
 
-    new_states = Gpio.diff_matrices(current_matrix, new_matrix)
+    case Gpio.diff_matrices(current_matrix, new_matrix) do
+      [] ->
+        :noop
 
-    # TODO: Send the new states to an existing listener
-    # passed via configuration
+      keys_pressed ->
+        GenServer.cast(reporter, {:keys_pressed, keys_pressed})
+    end
 
     GenServer.cast(self(), :scan_matrix)
 
@@ -62,16 +68,8 @@ defmodule ElixirKeeb.Gpio.Listener do
   defp get_config() do
     wait_ms = Application.get_env(:elixir_keeb, :listener_wait_ms) || @default_listener_wait_ms
 
-    get_or_raise = fn config_key ->
-      value =
-        Application.get_env(:elixir_keeb, config_key) ||
-          raise("Please set the `:elixir_keeb, :#{config_key}` configuration entry")
-
-      {config_key, value}
-    end
-
-    [:line_pins, :column_pins]
-    |> Enum.map(get_or_raise)
+    [:line_pins, :column_pins, :reporter]
+    |> Enum.map(&Utils.get_config_or_raise/1)
     |> Kernel.++(listener_wait_ms: wait_ms)
   end
 end
