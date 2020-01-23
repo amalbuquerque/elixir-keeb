@@ -4,23 +4,22 @@ defmodule ElixirKeeb.Application do
   use Application
 
   def start(_type, _args) do
-    initialize(target())
+    device = configure_device(target())
+
     opts = [strategy: :one_for_one, name: ElixirKeeb.Supervisor]
 
     children =
-      [] ++ children(target())
+      [] ++ children(target(), device)
 
     Supervisor.start_link(children, opts)
   end
 
-  def initialize(:host), do: :noop
-  def initialize(_target) do
-    IO.puts("Starting USB HID Gadget...")
+  def configure_device(:host), do: :no_device
+  def configure_device(_target) do
     ElixirKeeb.Usb.Gadget.configure_device()
-    IO.puts("USB HID Gadget configured.")
   end
 
-  def children(:host) do
+  def children(:host, _device) do
     [
       # Children that only run on the host
       # Starts a worker by calling: ElixirKeeb.Worker.start_link(arg)
@@ -28,11 +27,13 @@ defmodule ElixirKeeb.Application do
     ]
   end
 
-  def children(_target) do
+  def children(_target, device) do
     [
       # Children for all targets except host
       # Starts a worker by calling: ElixirKeeb.Worker.start_link(arg)
       # {ElixirKeeb.Worker, arg},
+      # {ElixirKeeb.Gpio.Listener, []},
+      # {ElixirKeeb.Usb.Reporter, [device]}
     ]
   end
 
