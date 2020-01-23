@@ -2,7 +2,6 @@ defmodule ElixirKeeb.Layout do
   @moduledoc """
   """
 
-  require Logger
   alias ElixirKeeb.Utils
 
   defmacro __using__(matrix: matrix_module) do
@@ -16,29 +15,28 @@ defmodule ElixirKeeb.Layout do
     end
   end
 
-  # TODO: Fix this warning
-  # TestModule.Matrix
-  # warning: this clause cannot match because a previous clause at line 14 always matches
-  # lib/test_module.ex:14
   defmacro __before_compile__(%Macro.Env{module: module} = env) do
     layouts = Module.get_attribute(module, :layouts)
     matrix_module = Module.get_attribute(module, :matrix_module)
                     |> Macro.expand(env)
 
-    IO.puts(inspect(layouts))
-    IO.puts(inspect(matrix_module))
+    IO.inspect(layouts, label: "Layouts it received via @layouts")
+    IO.inspect(matrix_module, label: "Matrix module it received via @matrix_module")
 
     pin_matrix = matrix_module.pin_matrix()
 
-    layouts
-    |> Enum.map(fn layout -> matrix_module.map(layout) end)
-    |> Enum.zip(0..(length(layouts) - 1))
-    |> Enum.map(fn {layout, layer_index} ->
-      keycode_functions_for_layer(layout, pin_matrix, layer_index)
-    end)
-    |> List.flatten()
-    |> Kernel.++([catch_all_keycode_function()])
-    |> wrap_in_a_block()
+    result = layouts
+             |> Enum.map(fn layout -> matrix_module.map(layout) end)
+             |> Enum.zip(0..(length(layouts) - 1))
+             |> Enum.map(fn {layout, layer_index} ->
+               keycode_functions_for_layer(layout, pin_matrix, layer_index)
+             end)
+             |> List.flatten()
+             |> Enum.uniq()
+             |> Kernel.++([catch_all_keycode_function()])
+             |> wrap_in_a_block()
+
+    IO.inspect(result, label: "Layout macro module result")
   end
 
   def keycode_functions_for_layer(layout_matrix, pin_matrix, layer) do
