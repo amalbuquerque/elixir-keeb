@@ -16,6 +16,10 @@ defmodule ElixirKeeb.Layout do
     end
   end
 
+  # TODO: Fix this warning
+  # TestModule.Matrix
+  # warning: this clause cannot match because a previous clause at line 14 always matches
+  # lib/test_module.ex:14
   defmacro __before_compile__(%Macro.Env{module: module} = env) do
     layouts = Module.get_attribute(module, :layouts)
     matrix_module = Module.get_attribute(module, :matrix_module)
@@ -37,7 +41,7 @@ defmodule ElixirKeeb.Layout do
     |> wrap_in_a_block()
   end
 
-  defp keycode_functions_for_layer(layout_matrix, pin_matrix, layer) do
+  def keycode_functions_for_layer(layout_matrix, pin_matrix, layer) do
     layout_and_pin_matrices = Utils.zip_matrices(layout_matrix, pin_matrix)
 
     for line <- layout_and_pin_matrices do
