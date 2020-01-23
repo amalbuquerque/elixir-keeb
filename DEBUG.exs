@@ -38,10 +38,11 @@ open_ports = fn (pins, direction) when direction in [:input, :output] ->
 end
 
 require Logger
+alias ElixirKeeb.Gpio
 
 spawn(fn ->
-  ports_a = open_ports.(a_pins, :output)
-  ports_b = open_ports.(b_pins, :input)
+  ports_a = Gpio.open_ports.(a_pins, :output)
+  ports_b = Gpio.open_ports.(b_pins, :input)
 
   for {a_port, a_gpio} <- ports_a do
     Circuits.GPIO.write(a_gpio, 1)

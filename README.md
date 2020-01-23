@@ -1,6 +1,31 @@
 # ElixirKeeb
 
-**TODO: Add description**
+Elixir keyboard firmware.
+
+## Build steps
+
+This will upload the firmware via SSH:
+
+1. `export MIX_ENV=dev`
+2. `export MIX_TARGET=rpi0_hid`
+3. `export NERVES_NETWORK_PSK=atenas++`
+4. `export NERVES_NETWORK_SSID=ligustrum`
+5. `mix firmware`
+6. `./upload.sh 10.0.0.109 /home/andre/projs/personal
+/elixir_keeb/_build/rpi0_hid_dev/nerves/images/elix
+ir_keeb.fw`
+
+## Debugging
+
+Connect via SSH with `ssh 10.0.0.109`.
+
+If it borked the SSH connection, insert the micro SD card on the PC and burn the firmware to it:
+
+1. `export MIX_ENV=dev`
+2. `export MIX_TARGET=rpi0_hid`
+3. `export NERVES_NETWORK_PSK=atenas++`
+4. `export NERVES_NETWORK_SSID=ligustrum`
+5. `mix firmware.burn`
 
 ## Targets
 
