@@ -2,6 +2,7 @@ defmodule ElixirKeeb.Layout do
   @moduledoc """
   """
 
+  require Logger
   alias ElixirKeeb.Utils
 
   defmacro __using__(matrix: matrix_module) do
@@ -20,8 +21,8 @@ defmodule ElixirKeeb.Layout do
     matrix_module = Module.get_attribute(module, :matrix_module)
                     |> Macro.expand(env)
 
-    IO.inspect(layouts, label: "Layouts it received via @layouts")
-    IO.inspect(matrix_module, label: "Matrix module it received via @matrix_module")
+    Logger.debug(inspect(layouts), label: "Layouts it received via @layouts")
+    Logger.debug(inspect(matrix_module), label: "Matrix module it received via @matrix_module")
 
     pin_matrix = matrix_module.pin_matrix()
 
@@ -36,7 +37,7 @@ defmodule ElixirKeeb.Layout do
              |> Kernel.++([catch_all_keycode_function()])
              |> wrap_in_a_block()
 
-    IO.inspect(result, label: "Layout macro module result")
+    Logger.debug(inspect(result), label: "Layout macro module result")
   end
 
   def keycode_functions_for_layer(layout_matrix, pin_matrix, layer) do

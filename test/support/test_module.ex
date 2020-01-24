@@ -16,9 +16,9 @@ defmodule TestModule.Layout do
 
   @layouts [
     [ # layer 0
-      [:a, :b, :c, :d],
-      [:e, :f, :g, :h],
-      [:i, :j, :k, :l]
+      [:kc_a, :kc_b, :kc_c, :kc_d],
+      [:kc_e, :kc_f, :kc_g, :kc_h],
+      [:kc_i, :kc_j, :kc_k, :kc_l]
     ],
   ]
 end

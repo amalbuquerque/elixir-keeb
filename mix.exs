@@ -15,6 +15,7 @@ defmodule ElixirKeeb.MixProject do
       build_embedded: true,
       aliases: [loadconfig: [&bootstrap/1]],
       deps: deps(),
+      elixirc_paths: elixirc_paths(Mix.env()),
       releases: [{@app, release()}],
       preferred_cli_target: [run: :host, test: :host]
     ]
@@ -35,7 +36,9 @@ defmodule ElixirKeeb.MixProject do
     ]
   end
 
-  # Run "mix help deps" to learn about dependencies.
+  defp elixirc_paths(:test), do: ["test/support", "lib"]
+  defp elixirc_paths(_), do: ["lib"]
+
   defp deps do
     [
       # Dependencies for all targets
