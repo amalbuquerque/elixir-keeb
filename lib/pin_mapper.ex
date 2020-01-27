@@ -29,12 +29,12 @@ defmodule ElixirKeeb.PinMapper do
   In the end we want a matrix like this:
 
   (C)
-  [
-    [kc_no, k01,   k02,   k03  ], # "P1,P2 P1,P4 P1,P6 P1,P7
-    [k10,   k11,   k12,   k13  ], # "P3,P2 P3,P4 P3,P6 P3,P7
-    [k20,   k21,   kc_no, k23  ], # "P5,P2 P5,P4 P5,P6 P5,P7
-    [k30,   kc_no, k32,   kc_no], # "P8,P2 P8,P4 P8,P6 P8,P7
-  ]
+  [                               #         kx0:P2  kx1:P4  kx2:P6  kx3:P7  cols
+    [kc_no, k01,   k02,   k03  ], # k0y:P1  P1,P2   P1,P4   P1,P6   P1,P7
+    [k10,   k11,   k12,   k13  ], # k1y:P3  P3,P2   P3,P4   P3,P6   P3,P7
+    [k20,   k21,   kc_no, k23  ], # k2y:P5  P5,P2   P5,P4   P5,P6   P5,P7
+    [k30,   kc_no, k32,   kc_no], # k3y:P8  P8,P2   P8,P4   P8,P6   P8,P7
+  ]                               #    rows
 
   Where `kc_no` means this pin combination isn't
   connected to any key.
@@ -134,7 +134,8 @@ defmodule ElixirKeeb.PinMapper do
   ]
   ```
 
-  It returns the following pin matrix:
+  It returns the following pin matrix (we have 4 line pins
+  and 4 column pins, hence we have a 4x4 pin matrix):
 
   ```
   [
