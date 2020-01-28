@@ -22,18 +22,14 @@ defmodule ElixirKeeb.Application do
   def children(:host, _device) do
     [
       # Children that only run on the host
-      # Starts a worker by calling: ElixirKeeb.Worker.start_link(arg)
-      # {ElixirKeeb.Worker, arg},
     ]
   end
 
   def children(_target, device) do
     [
       # Children for all targets except host
-      # Starts a worker by calling: ElixirKeeb.Worker.start_link(arg)
-      # {ElixirKeeb.Worker, arg},
-      # {ElixirKeeb.Gpio.Listener, []},
-      # {ElixirKeeb.Usb.Reporter, [device]}
+      {ElixirKeeb.Gpio.Listener, []},
+      {ElixirKeeb.Usb.Reporter, [device]}
     ]
   end
 
