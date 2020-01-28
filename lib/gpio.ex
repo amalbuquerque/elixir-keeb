@@ -32,7 +32,7 @@ defmodule ElixirKeeb.Gpio do
         for {_column_port, column_gpio} <- column_ports do
           read = CircuitsGPIO.read(column_gpio)
 
-          Process.sleep(wait_ms)
+          maybe_sleep(wait_ms)
 
           read
         end
@@ -42,6 +42,9 @@ defmodule ElixirKeeb.Gpio do
       line_reads
     end
   end
+
+  defp maybe_sleep(0), do: :noop
+  defp maybe_sleep(wait_ms), do: Process.sleep(wait_ms)
 
   def diff_matrices(current_matrix, new_matrix, line_index \\ 0)
 

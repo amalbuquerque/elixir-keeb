@@ -8,7 +8,7 @@ use Mix.Config
 config :elixir_keeb, target: Mix.target()
 
 config :elixir_keeb,
-  listener_wait_ms: 10,
+  listener_wait_ms: 0,
   line_pins: [
     # {human-readable name, pin}
     {:AB, 14},
