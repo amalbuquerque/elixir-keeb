@@ -1,4 +1,4 @@
-defmodule TestModule.Matrix do
+defmodule TestModule.First.Matrix do
   use ElixirKeeb.PinMapper
 
   @physical_matrix [
@@ -11,8 +11,8 @@ defmodule TestModule.Matrix do
   @column_pins [P2: 2, P4: 4, P6: 6, P7: 7]
 end
 
-defmodule TestModule.Layout do
-  use ElixirKeeb.Layout, matrix: TestModule.Matrix
+defmodule TestModule.First.Layout do
+  use ElixirKeeb.Layout, matrix: TestModule.First.Matrix
 
   @layouts [
     [ # layer 0
