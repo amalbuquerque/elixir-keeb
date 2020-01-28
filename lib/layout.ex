@@ -29,8 +29,8 @@ defmodule ElixirKeeb.Layout do
     result = layouts
              |> Enum.map(fn layout -> matrix_module.map(layout) end)
              |> Enum.zip(0..(length(layouts) - 1))
-             |> Enum.map(fn {layout, layer_index} ->
-               keycode_functions_for_layer(layout, pin_matrix, layer_index)
+             |> Enum.map(fn {layout_matrix, layer_index} ->
+               keycode_functions_for_layer(layout_matrix, pin_matrix, layer_index)
              end)
              |> List.flatten()
              |> Enum.uniq()
@@ -38,6 +38,8 @@ defmodule ElixirKeeb.Layout do
              |> wrap_in_a_block()
 
     Logger.debug(inspect(result), label: "Layout macro module result")
+
+    result
   end
 
   def keycode_functions_for_layer(layout_matrix, pin_matrix, layer) do
