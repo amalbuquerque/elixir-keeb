@@ -52,17 +52,21 @@ defmodule ElixirKeeb.Gpio.Listener do
 
     new_matrix = Gpio.scan_matrix(line_ports, column_ports, listener_wait_ms)
 
-    case Gpio.diff_matrices(current_matrix, new_matrix) do
+    new_state = case Gpio.diff_matrices(current_matrix, new_matrix) do
       [] ->
-        :noop
+        state
 
       keys_pressed ->
+        Logger.debug(inspect(keys_pressed), label: "Listener detected keys pressed")
+
         GenServer.cast(reporter, {:keys_pressed, keys_pressed})
+
+        %{state | current_matrix: new_matrix}
     end
 
     GenServer.cast(self(), :scan_matrix)
 
-    {:noreply, state}
+    {:noreply, new_state}
   end
 
   defp get_config() do
