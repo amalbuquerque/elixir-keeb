@@ -173,7 +173,9 @@ defmodule ElixirKeeb.PinMapper do
   defmacro __before_compile__(%Macro.Env{module: module}) do
     physical_matrix = Module.get_attribute(module, :physical_matrix)
     line_pins = Module.get_attribute(module, :line_pins)
+                |> Enum.sort()
     column_pins = Module.get_attribute(module, :column_pins)
+                  |> Enum.sort()
 
     physical_matrix_kc_xy = physical_matrix_kc_xy(
       physical_matrix, lines: line_pins, columns: column_pins)

@@ -8,7 +8,7 @@ defmodule ElixirKeeb do
 
   ## Examples
 
-      iex> ElixirKeeb.hello
+      iex> ElixirKeeb.hello |> Enum.at(0)
       :world
 
   """
