@@ -15,10 +15,11 @@ defmodule ElixirKeeb.Utils do
   end
 
   def zip_matrices(
-        [line_a | rest_matrix_a] = matrix_a,
-        [line_b | rest_matrix_b] = matrix_b
-      )
-      when length(matrix_a) == length(matrix_b) do
+    [line_a | rest_matrix_a] = matrix_a,
+    [line_b | rest_matrix_b] = matrix_b
+  )
+  when length(matrix_a) == length(matrix_b)
+  and length(line_a) == length(line_b) do
     [
       Enum.zip(line_a, line_b)
       | zip_matrices(rest_matrix_a, rest_matrix_b)
