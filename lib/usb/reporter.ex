@@ -5,7 +5,6 @@ defmodule ElixirKeeb.Usb.Reporter do
   alias ElixirKeeb.Usb.{Report, Gadget}
 
   @empty_input_report <<0, 0, 0, 0, 0, 0, 0, 0>>
-  @layer 0
 
   def start_link(device) do
     config = [
@@ -25,7 +24,8 @@ defmodule ElixirKeeb.Usb.Reporter do
       %{
         device: device,
         layout: layout_module,
-        input_report: @empty_input_report
+        input_report: @empty_input_report,
+        layer: 0
       }
     }
   end
@@ -33,7 +33,12 @@ defmodule ElixirKeeb.Usb.Reporter do
   @impl true
   def handle_cast(
         {:keys_pressed, kc_xy_keys},
-        %{device: device, layout: layout_module, input_report: previous_report} = state
+    %{
+      device: device,
+      layout: layout_module,
+      input_report: previous_report,
+      layer: layer
+    } = state
       ) do
     Logger.debug(
       "Received keys: #{inspect(kc_xy_keys)}, previous_report: #{inspect(previous_report)}"
@@ -42,7 +47,7 @@ defmodule ElixirKeeb.Usb.Reporter do
     keycodes_to_send =
       Enum.map(
         kc_xy_keys,
-        fn {kc_xy, state} -> {layout_module.keycode(kc_xy, @layer), state} end
+        fn {kc_xy, state} -> {layout_module.keycode(kc_xy, layer), state} end
       )
 
     new_input_report = Report.update_report_with_keys(previous_report, keycodes_to_send)
