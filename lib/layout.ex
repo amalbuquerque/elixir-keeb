@@ -3,7 +3,16 @@ defmodule ElixirKeeb.Layout do
   """
 
   require Logger
-  alias ElixirKeeb.Utils
+  alias ElixirKeeb.{Utils, KeycodeBehavior}
+
+  defmacro toggle_layer(layer) when is_integer(layer) do
+    quote do
+      %KeycodeBehavior{
+        action: :toggle,
+        layer: unquote(layer)
+      }
+    end
+  end
 
   defmacro __using__(matrix: matrix_module) do
     %Macro.Env{module: caller_module} = __CALLER__
@@ -11,6 +20,7 @@ defmodule ElixirKeeb.Layout do
 
     quote do
       import unquote(__MODULE__)
+      require unquote(__MODULE__)
 
       @before_compile unquote(__MODULE__)
     end
@@ -34,12 +44,23 @@ defmodule ElixirKeeb.Layout do
              end)
              |> List.flatten()
              |> Enum.uniq()
-             |> Kernel.++([catch_all_keycode_function()])
+             |> Kernel.++([
+               catch_all_keycode_function(),
+               all_layouts_function()
+             ])
              |> wrap_in_a_block()
 
     Logger.debug(inspect(result), label: "Layout macro module result")
 
     result
+  end
+
+  defp all_layouts_function() do
+    quote do
+      def all_layouts() do
+        @layouts
+      end
+    end
   end
 
   def keycode_functions_for_layer(layout_matrix, pin_matrix, layer) do
@@ -53,10 +74,20 @@ defmodule ElixirKeeb.Layout do
     |> List.flatten()
   end
 
-  defp keycode_function(kc_xy, layer, keycode) do
+  defp keycode_function(kc_xy, layer, keycode) when is_atom(keycode) do
     quote do
       def keycode(unquote(kc_xy), unquote(layer)) do
         unquote(keycode)
+      end
+    end
+  end
+
+  defp keycode_function(kc_xy, layer, keycode) do
+    escaped_keycode = Macro.escape(keycode)
+
+    quote do
+      def keycode(unquote(kc_xy), unquote(layer)) do
+        unquote(escaped_keycode)
       end
     end
   end
