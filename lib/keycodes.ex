@@ -2,6 +2,8 @@ defmodule ElixirKeeb.Usb.Keycodes do
   alias ElixirKeeb.Utils
   use Bitwise
 
+  @transparent_keycodes [:_, :__, :___, :____, :_____]
+
   # Keyboard/Keypad Page (0x07)
   # adapted from TMK/QMK qmk_firmware/tmk_core/common/keycode.h
   @normal [
@@ -194,9 +196,15 @@ defmodule ElixirKeeb.Usb.Keycodes do
 
     defguard modifier?(keycode) when keycode in @modifier_keycodes
 
+    defguard transparent?(keycode) when keycode in @transparent_keycodes
+
     def is_modifier?(keycode) when modifier?(keycode), do: true
 
     def is_modifier?(_keycode), do: false
+
+    def is_transparent?(keycode) when transparent?(keycode), do: true
+
+    def is_transparent?(_keycode), do: false
 
     def value(keycode, state \\ :pressed)
 

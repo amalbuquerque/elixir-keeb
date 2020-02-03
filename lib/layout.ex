@@ -4,6 +4,8 @@ defmodule ElixirKeeb.Layout do
 
   require Logger
   alias ElixirKeeb.{Utils, KeycodeBehavior}
+  alias ElixirKeeb.Usb.Keycodes
+  import ElixirKeeb.Usb.Keycodes, only: [transparent?: 1]
 
   defmacro toggle_layer(layer) when is_integer(layer) do
     quote do
@@ -36,11 +38,12 @@ defmodule ElixirKeeb.Layout do
 
     pin_matrix = matrix_module.pin_matrix()
 
-    result = layouts
-             |> Enum.map(fn layout -> matrix_module.map(layout) end)
+    layout_matrices = Enum.map(layouts, &matrix_module.map/1)
+
+    result = layout_matrices
              |> Enum.zip(0..(length(layouts) - 1))
-             |> Enum.map(fn {layout_matrix, layer_index} ->
-               keycode_functions_for_layer(layout_matrix, pin_matrix, layer_index)
+             |> Enum.map(fn {_layout_matrix, layer_index} ->
+               keycode_functions_for_layer(layout_matrices, layer_index, pin_matrix)
              end)
              |> List.flatten()
              |> Enum.uniq()
@@ -63,15 +66,37 @@ defmodule ElixirKeeb.Layout do
     end
   end
 
-  def keycode_functions_for_layer(layout_matrix, pin_matrix, layer) do
+  def keycode_functions_for_layer(layout_matrices, layer_index, pin_matrix) do
+    layout_matrix = Enum.at(layout_matrices, layer_index)
     layout_and_pin_matrices = Utils.zip_matrices(layout_matrix, pin_matrix)
 
-    for line <- layout_and_pin_matrices do
-      for {layout_keycode, kc_xy} <- line do
-        keycode_function(kc_xy, layer, layout_keycode)
+    for {line, line_index} <- Utils.zip_with_index(layout_and_pin_matrices) do
+      for {{layout_keycode, kc_xy}, column_index} <- Utils.zip_with_index(line) do
+        layout_keycode = actual_keycode(
+          layout_keycode, layout_matrices, layer_index, line_index, column_index)
+
+        keycode_function(kc_xy, layer_index, layout_keycode)
       end
     end
     |> List.flatten()
+  end
+
+  def actual_keycode(
+    current_keycode, _layout_matrices, _layer_index, _line_index, _column_index) when not transparent?(current_keycode), do: current_keycode
+
+  def actual_keycode(current_keycode, layout_matrices, layer_index, line_index, column_index) when transparent?(current_keycode) do
+    (layer_index-1)..0
+    |> Enum.reduce_while(current_keycode, fn layer, _acc ->
+      layout = Enum.at(layout_matrices, layer)
+      keycode = Utils.matrix_at(layout, line_index, column_index)
+
+      case Keycodes.is_transparent?(keycode) do
+        true ->
+          {:cont, current_keycode}
+        _ ->
+          {:halt, keycode}
+      end
+    end)
   end
 
   defp keycode_function(kc_xy, layer, keycode) when is_atom(keycode) do

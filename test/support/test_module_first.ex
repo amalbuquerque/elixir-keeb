@@ -20,5 +20,15 @@ defmodule TestModule.First.Layout do
       [:kc_e, :kc_f, :kc_g, :kc_h          ],
       [:kc_i, :kc_j, :kc_k, toggle_layer(1)]
     ],
+    [ # layer 1
+      [:kc_1, :kc_2, :kc_3, :kc_4],
+      [:kc_5, :kc_6, :kc_7, :kc_8],
+      [:kc_9, :kc_0, :____, :____]
+    ],
+    [ # layer 2
+      [:kc_l, :kc_m, :kc_n, :kc_o],
+      [:kc_p, :kc_q, :kc_r, :kc_s],
+      [:____, :kc_u, :kc_v, :____]
+    ],
   ]
 end

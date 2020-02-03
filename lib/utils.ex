@@ -1,6 +1,12 @@
 defmodule ElixirKeeb.Utils do
   @kc_indexes "0123456789abcdefghijklmnopqrstuvwxyz"
 
+  def matrix_at(matrix, x, y) do
+    matrix
+    |> Enum.at(x)
+    |> Enum.at(y)
+  end
+
   def get_config_or_raise(config_key) do
       value =
         Application.get_env(:elixir_keeb, config_key) ||
