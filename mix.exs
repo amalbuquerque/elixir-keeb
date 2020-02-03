@@ -55,7 +55,8 @@ defmodule ElixirKeeb.MixProject do
 
       # Dependencies for specific targets
       {:nerves_system_rpi0, "~> 1.8", runtime: false, targets: :rpi0},
-      {:nerves_system_rpi0_hid, path: "../nerves_custom_rpi0", runtime: false, targets: :rpi0_hid}
+      {:nerves_system_rpi0_hid, path: "../nerves_custom_rpi0", runtime: false, targets: :rpi0_hid},
+      {:mix_test_watch, "~> 1.0.2", only: :test}
     ]
   end
 
