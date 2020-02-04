@@ -11,9 +11,7 @@ This will upload the firmware via SSH:
 3. `export NERVES_NETWORK_PSK=atenas++`
 4. `export NERVES_NETWORK_SSID=ligustrum`
 5. `mix firmware`
-6. `./upload.sh 10.0.0.109 /home/andre/projs/personal
-/elixir_keeb/_build/rpi0_hid_dev/nerves/images/elix
-ir_keeb.fw`
+6. `./upload.sh 10.0.0.109 /home/andre/projs/personal/elixir_keeb/_build/rpi0_hid_dev/nerves/images/elixir_keeb.fw`
 
 ## Debugging
 

@@ -6,16 +6,6 @@ defmodule ElixirKeeb.Usb.Report do
   @released_report_value 0x00
   @ignored 0x00
 
-  def update_report_with_keys(
-        <<_mod, _, _key_0, _rest_keycodes::binary>> = previous_report,
-        keys
-      ) do
-    keys
-    |> Enum.reduce(previous_report, fn key_and_state, report ->
-      update_report(report, key_and_state)
-    end)
-  end
-
   def update_report(
         <<_mod, _, _key_0, _rest_keycodes::binary>> = previous_report,
         {keycode, _state}
