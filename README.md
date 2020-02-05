@@ -2,6 +2,22 @@
 
 Elixir keyboard firmware.
 
+## Features
+
+This firmware supports:
+
+- Working like a standard keyboard, ie., its layout having a single layer;
+- Multiple layers (toggled or locked by a key press).
+
+## Wishlist
+
+- Tap to send a key press, keep pressed to activate a layer or send a modifier;
+- Web dashboard;
+- User-defined macros;
+- Activate LEDs;
+- Debug mode;
+- Record macros on the fly.
+
 ## Build steps
 
 This will upload the firmware via SSH:

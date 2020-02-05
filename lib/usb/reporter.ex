@@ -99,6 +99,35 @@ defmodule ElixirKeeb.Usb.Reporter do
   end
 
   defp handle_keycode_and_state(
+         %{} = state,
+         {
+           %KeycodeBehavior{action: :lock, layer: _layer_to_toggle},
+           :pressed
+         }
+       ) do
+    # we only do something when a layer lock key is released
+    state
+  end
+
+  defp handle_keycode_and_state(
+         %{previous_layer: previous_layer, layer: current_layer} = state,
+         {
+           %KeycodeBehavior{action: :lock, layer: layer_to_lock},
+           :released
+         }
+       ) do
+    case current_layer do
+      ^layer_to_lock ->
+        # layer_to_lock was already activated, so we unlock it
+        %{state | previous_layer: current_layer, layer: previous_layer}
+
+      _ ->
+        # layer_to_lock wasn't activated, so we lock it
+        %{state | previous_layer: current_layer, layer: layer_to_lock}
+    end
+  end
+
+  defp handle_keycode_and_state(
          %{input_report: previous_report} = state,
          {_mapped_keycode, _keycode_state} = keycode_and_state
        ) do

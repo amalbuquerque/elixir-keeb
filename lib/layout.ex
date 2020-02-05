@@ -16,6 +16,15 @@ defmodule ElixirKeeb.Layout do
     end
   end
 
+  defmacro lock_layer(layer) when is_integer(layer) do
+    quote do
+      %KeycodeBehavior{
+        action: :lock,
+        layer: unquote(layer)
+      }
+    end
+  end
+
   defmacro __using__(matrix: matrix_module) do
     %Macro.Env{module: caller_module} = __CALLER__
     Module.put_attribute(caller_module, :matrix_module, matrix_module)

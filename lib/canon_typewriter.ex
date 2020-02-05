@@ -20,7 +20,7 @@ defmodule ElixirKeeb.CanonTypewriter.Layout do
   @layouts [
     [ # layer 0
       [:kc_escape, :kc_1, :kc_2, :kc_3, :kc_4, :kc_5, :kc_6, :kc_7, :kc_8, :kc_9, :kc_0, :kc_equal, :kc_slash, :kc_delete, :kc_bspace],
-      [toggle_layer(1), :kc_q, :kc_w, :kc_e, :kc_r, :kc_t, :kc_y, :kc_u, :kc_i, :kc_o, :kc_p, :kc_lbracket, :kc_rbracket, :kc_bslash],
+      [toggle_layer(1), :kc_q, :kc_w, :kc_e, :kc_r, :kc_t, :kc_y, :kc_u, :kc_i, :kc_o, :kc_p, :kc_lbracket, :kc_rbracket, lock_layer(1)],
       [:kc_lctrl, :kc_a, :kc_s, :kc_d, :kc_f, :kc_g, :kc_h, :kc_j, :kc_k, :kc_l, :kc_scolon, :kc_quote, :kc_lgui, :kc_enter],
       # 1st position (kc_lshift) needs to be identical to the last one,
       # since the matrix has the same line and column pin on both positions
@@ -29,7 +29,7 @@ defmodule ElixirKeeb.CanonTypewriter.Layout do
     ],
     [ # layer 1
       [:____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____],
-      [:____, :kc_1, :kc_2, :kc_3, :kc_4, :kc_5, :kc_6, :kc_7, :kc_8, :kc_9, :kc_0, :____, :____, :____],
+      [:____, :kc_1, :kc_2, :kc_3, :kc_4, :kc_5, :kc_6, :kc_7, :kc_8, :kc_9, :kc_0, :kc_tab, :kc_bslash, :____],
       [:____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____],
       [:____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____],
       [:____, :kc_x, :____]
