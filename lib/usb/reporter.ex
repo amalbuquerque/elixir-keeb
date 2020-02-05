@@ -68,35 +68,42 @@ defmodule ElixirKeeb.Usb.Reporter do
   end
 
   def update_input_report(
-         kc_xy_keys,
-         %{layout: layout_module} = state
-       ) do
-    Enum.reduce(kc_xy_keys, state, fn {kc_xy, state},
-                               %{
-                                 input_report: previous_report,
-                                 previous_layer: previous_layer,
-                                 layer: current_layer
-                               } = acc ->
+        kc_xy_keys,
+        %{layout: layout_module} = state
+      ) do
+    Enum.reduce(kc_xy_keys, state, fn {kc_xy, state}, %{layer: current_layer} = acc ->
       mapped_keycode = layout_module.keycode(kc_xy, current_layer)
 
-      case {mapped_keycode, state} do
-        {
-          %KeycodeBehavior{action: :toggle, layer: layer_to_toggle},
-          :pressed
-        } ->
-          %{acc | previous_layer: current_layer, layer: layer_to_toggle}
-
-        {
-          %KeycodeBehavior{action: :toggle, layer: layer_to_toggle},
-          :released
-        } ->
-          %{acc | previous_layer: layer_to_toggle, layer: previous_layer}
-
-        keycode_and_state ->
-          input_report = Report.update_report(previous_report, keycode_and_state)
-
-          %{acc | input_report: input_report}
-      end
+      handle_keycode_and_state(acc, {mapped_keycode, state})
     end)
+  end
+
+  defp handle_keycode_and_state(
+         %{layer: current_layer} = state,
+         {
+           %KeycodeBehavior{action: :toggle, layer: layer_to_toggle},
+           :pressed
+         }
+       ) do
+    %{state | previous_layer: current_layer, layer: layer_to_toggle}
+  end
+
+  defp handle_keycode_and_state(
+         %{previous_layer: previous_layer} = state,
+         {
+           %KeycodeBehavior{action: :toggle, layer: layer_to_toggle},
+           :released
+         }
+       ) do
+    %{state | previous_layer: layer_to_toggle, layer: previous_layer}
+  end
+
+  defp handle_keycode_and_state(
+         %{input_report: previous_report} = state,
+         {_mapped_keycode, _keycode_state} = keycode_and_state
+       ) do
+    input_report = Report.update_report(previous_report, keycode_and_state)
+
+    %{state | input_report: input_report}
   end
 end
