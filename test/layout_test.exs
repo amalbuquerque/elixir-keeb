@@ -50,7 +50,28 @@ defmodule ElixirKeeb.LayoutTest do
         }
       ] = keycode_behaviors
 
-      assert is_list(macro_keys)
+      # macro is "Elixir!"
+      # 7 chars * 2 (pressed/released) + 2 Shift * 2 (press/released) = 18
+      assert [
+        {:kc_lshift, :pressed},
+        {:kc_e, :pressed},
+        {:kc_e, :released},
+        {:kc_lshift, :released},
+        {:kc_l, :pressed},
+        {:kc_l, :released},
+        {:kc_i, :pressed},
+        {:kc_i, :released},
+        {:kc_x, :pressed},
+        {:kc_x, :released},
+        {:kc_i, :pressed},
+        {:kc_i, :released},
+        {:kc_r, :pressed},
+        {:kc_r, :released},
+        {:kc_lshift, :pressed},
+        {:kc_1, :pressed},
+        {:kc_1, :released},
+        {:kc_lshift, :released},
+      ] == macro_keys
     end
 
     test "the `keycode/2` for the layer 1 returns the expected keycode, even for transparent keycodes" do

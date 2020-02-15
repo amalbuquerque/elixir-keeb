@@ -3,7 +3,7 @@ defmodule ElixirKeeb.Layout do
   """
 
   require Logger
-  alias ElixirKeeb.{Utils, KeycodeBehavior}
+  alias ElixirKeeb.{Utils, KeycodeBehavior, Macros}
   alias ElixirKeeb.Usb.Keycodes
   import ElixirKeeb.Usb.Keycodes, only: [transparent?: 1]
 
@@ -13,7 +13,7 @@ defmodule ElixirKeeb.Layout do
     quote do
       %KeycodeBehavior{
         action: :macro,
-        keys: Enum.at(@macros, unquote(macro))
+        keys: Enum.at(@macros, unquote(macro)) |> Enum.map(&Macros.convert_to_keycode/1) |> List.flatten()
       }
     end
   end
