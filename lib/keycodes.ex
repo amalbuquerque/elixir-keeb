@@ -6,7 +6,7 @@ defmodule ElixirKeeb.Usb.Keycodes do
 
   # Keyboard/Keypad Page (0x07)
   # adapted from TMK/QMK qmk_firmware/tmk_core/common/keycode.h
-  @normal [
+  @normal_keycodes [
     :kc_no,                  # 0x00
     :kc_roll_over,
     :kc_post_fail,
@@ -172,8 +172,10 @@ defmodule ElixirKeeb.Usb.Keycodes do
     :kc_clear_again,
     :kc_crsel,
     :kc_exsel
-    ] |> Utils.zip_with_index(0x00)
-    |> Enum.into(%{})
+    ]
+
+    @normal @normal_keycodes |> Utils.zip_with_index(0x00)
+                             |> Enum.into(%{})
 
     # modifiers exist on the first report byte
     # LCTRL on the 1st bit, RGUI on the last bit
@@ -194,9 +196,15 @@ defmodule ElixirKeeb.Usb.Keycodes do
 
     @keycodes Map.merge(@normal, @modifiers)
 
+    defguard normal?(keycode) when keycode in @normal_keycodes
+
     defguard modifier?(keycode) when keycode in @modifier_keycodes
 
     defguard transparent?(keycode) when keycode in @transparent_keycodes
+
+    def is_normal?(keycode) when normal?(keycode), do: true
+
+    def is_normal?(_keycode), do: false
 
     def is_modifier?(keycode) when modifier?(keycode), do: true
 
