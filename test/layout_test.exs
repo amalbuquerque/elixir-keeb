@@ -27,7 +27,7 @@ defmodule ElixirKeeb.LayoutTest do
       end
     end
 
-    test "the `keycode/2` returns a %KeycodeBehavior{} expanded from a `toggle_layer(x)`" do
+    test "the `keycode/2` returns a %KeycodeBehavior{} expanded from a `toggle_layer(x)` and a `m(y)`" do
       [layer0 | _rest] = @subject.all_layouts()
 
       mapped_keycodes = @matrix.map(layer0)
@@ -39,9 +39,18 @@ defmodule ElixirKeeb.LayoutTest do
                             _ -> false
                           end)
 
-      assert [%KeycodeBehavior{
-        action: :toggle,
-        layer: 1}] = keycode_behaviors
+      assert [
+        %KeycodeBehavior{
+          action: :macro,
+          keys: macro_keys
+        },
+        %KeycodeBehavior{
+          action: :toggle,
+          layer: 1
+        }
+      ] = keycode_behaviors
+
+      assert is_list(macro_keys)
     end
 
     test "the `keycode/2` for the layer 1 returns the expected keycode, even for transparent keycodes" do

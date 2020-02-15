@@ -14,9 +14,26 @@ end
 defmodule TestModule.First.Layout do
   use ElixirKeeb.Layout, matrix: TestModule.First.Matrix
 
+  @macros [
+    # macro 0
+    [
+      {:kc_lshift, :pressed},
+      :kc_e,
+      {:kc_lshift, :released},
+      :kc_l,
+      :kc_i,
+      :kc_x,
+      :kc_i,
+      :kc_r,
+      {:kc_lshift, :pressed},
+      :kc_1,
+      {:kc_lshift, :released},
+    ]
+  ]
+
   @layouts [
     [ # layer 0
-      [:kc_a, :kc_b, :kc_c, :kc_d          ],
+      [:kc_a, :kc_b, :kc_c, m(0)           ],
       [:kc_e, :kc_f, :kc_g, :kc_h          ],
       [:kc_i, :kc_j, :kc_k, toggle_layer(1)]
     ],
