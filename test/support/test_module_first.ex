@@ -28,13 +28,27 @@ defmodule TestModule.First.Layout do
       {:kc_lshift, :pressed},
       :kc_1,
       {:kc_lshift, :released},
+    ],
+    # macro 1
+    [
+      {"lshift", :pressed},
+      "e",
+      {"lshift", :released},
+      "l",
+      "i",
+      "x",
+      "i",
+      "r",
+      {"lshift", :pressed},
+      "1",
+      {"lshift", :released},
     ]
   ]
 
   @layouts [
     [ # layer 0
       [:kc_a, :kc_b, :kc_c, m(0)           ],
-      [:kc_e, :kc_f, :kc_g, :kc_h          ],
+      [:kc_e, :kc_f, :kc_g, m(1)           ],
       [:kc_i, :kc_j, :kc_k, toggle_layer(1)]
     ],
     [ # layer 1

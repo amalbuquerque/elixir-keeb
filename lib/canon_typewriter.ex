@@ -17,6 +17,13 @@ end
 defmodule ElixirKeeb.CanonTypewriter.Layout do
   use ElixirKeeb.Layout, matrix: ElixirKeeb.CanonTypewriter.Matrix
 
+  @macros [
+    # macro 0
+    [:kc_a, :kc_b, :kc_c],
+    # macro 1
+    "xyz" |> String.graphemes()
+  ]
+
   @layouts [
     [ # layer 0
       [:kc_escape, :kc_1, :kc_2, :kc_3, :kc_4, :kc_5, :kc_6, :kc_7, :kc_8, :kc_9, :kc_0, :kc_equal, :kc_slash, :kc_delete, :kc_bspace],
@@ -30,7 +37,7 @@ defmodule ElixirKeeb.CanonTypewriter.Layout do
     [ # layer 1
       [:____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____],
       [:____, :kc_1, :kc_2, :kc_3, :kc_4, :kc_5, :kc_6, :kc_7, :kc_8, :kc_9, :kc_0, :kc_tab, :kc_bslash, :____],
-      [:____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____],
+      [:____, m(0), m(1), :____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____],
       [:____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____],
       [:____, :kc_x, :____]
     ]

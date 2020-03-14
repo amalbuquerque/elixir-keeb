@@ -45,6 +45,10 @@ defmodule ElixirKeeb.LayoutTest do
           keys: macro_keys
         },
         %KeycodeBehavior{
+          action: :macro,
+          keys: macro_keys
+        },
+        %KeycodeBehavior{
           action: :toggle,
           layer: 1
         }
