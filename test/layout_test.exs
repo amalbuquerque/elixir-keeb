@@ -40,10 +40,13 @@ defmodule ElixirKeeb.LayoutTest do
                           end)
 
       assert [
+        # macro 0
         %KeycodeBehavior{
           action: :macro,
           keys: macro_keys
         },
+        # macro 1, identical to macro 0
+        # but using string keycodes instead of the immediate keycode
         %KeycodeBehavior{
           action: :macro,
           keys: macro_keys

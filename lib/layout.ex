@@ -7,17 +7,6 @@ defmodule ElixirKeeb.Layout do
   alias ElixirKeeb.Usb.Keycodes
   import ElixirKeeb.Usb.Keycodes, only: [transparent?: 1]
 
-  # TODO: Move macros to their own Layout.Macros module
-
-  defmacro m(macro) when is_integer(macro) do
-    quote do
-      %KeycodeBehavior{
-        action: :macro,
-        keys: Enum.at(@macros, unquote(macro)) |> Enum.map(&Macros.convert_to_keycode/1) |> List.flatten()
-      }
-    end
-  end
-
   defmacro toggle_layer(layer) when is_integer(layer) do
     quote do
       %KeycodeBehavior{
@@ -43,6 +32,8 @@ defmodule ElixirKeeb.Layout do
     quote do
       import unquote(__MODULE__)
       require unquote(__MODULE__)
+      import ElixirKeeb.Macros, only: [m: 1]
+      require ElixirKeeb.Macros
 
       @before_compile unquote(__MODULE__)
     end
