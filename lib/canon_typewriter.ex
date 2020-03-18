@@ -21,7 +21,21 @@ defmodule ElixirKeeb.CanonTypewriter.Layout do
     # macro 0
     [:kc_a, :kc_b, :kc_c],
     # macro 1
-    "xyz" |> String.graphemes()
+    "xyz" |> String.graphemes(),
+    # macro 2
+    [
+      {"lshift", :pressed},
+      "e",
+      {"lshift", :released},
+      "l",
+      "i",
+      "x",
+      "i",
+      "r",
+      {"lshift", :pressed},
+      "1",
+      {"lshift", :released},
+    ]
   ]
 
   @layouts [
@@ -37,7 +51,7 @@ defmodule ElixirKeeb.CanonTypewriter.Layout do
     [ # layer 1
       [:____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____],
       [:____, :kc_1, :kc_2, :kc_3, :kc_4, :kc_5, :kc_6, :kc_7, :kc_8, :kc_9, :kc_0, :kc_tab, :kc_bslash, :____],
-      [:____, m(0), m(1), :____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____],
+      [:____, m(0), m(1), m(2), :____, :____, :____, :____, :____, :____, :____, :____, :____, :____],
       [:____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____],
       [:____, :kc_x, :____]
     ]
