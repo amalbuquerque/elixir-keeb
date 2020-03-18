@@ -4,7 +4,7 @@ defmodule ElixirKeeb.Usb.Reporter do
   alias ElixirKeeb.{Utils, KeycodeBehavior}
   alias ElixirKeeb.Usb.{Report, Gadget}
 
-  @empty_input_report <<0, 0, 0, 0, 0, 0, 0, 0>>
+  @macro_sleep_between_key_behavior_ms 10
 
   def start_link(device) do
     config = [
@@ -24,7 +24,7 @@ defmodule ElixirKeeb.Usb.Reporter do
       %{
         device: device,
         layout: layout_module,
-        input_report: @empty_input_report,
+        input_report: Report.empty_report(),
         previous_layer: 0,
         layer: 0
       }
@@ -96,6 +96,44 @@ defmodule ElixirKeeb.Usb.Reporter do
          }
        ) do
     %{state | previous_layer: layer_to_toggle, layer: previous_layer}
+  end
+
+  defp handle_keycode_and_state(
+         %{} = state,
+         {
+           %KeycodeBehavior{action: :macro, layer: _layer_to_toggle},
+           :pressed
+         }
+       ) do
+    # we only do something when a macro key is released
+    state
+  end
+
+  defp handle_keycode_and_state(
+         %{device: device} = state,
+         {
+           %KeycodeBehavior{action: :macro, keys: macro_keys},
+           :released
+         }
+       ) do
+    Logger.debug("Macro key was just released. Keys: #{inspect(macro_keys)}")
+
+    # reset the input report
+    Gadget.raw_write(device, nil)
+
+    macro_keys
+    |> Enum.reduce(Report.empty_report(), fn keycode_and_state, input_report ->
+      updated_input_report = Report.update_report(input_report, keycode_and_state)
+
+      Logger.debug("Handling the macro step: #{inspect(keycode_and_state)}")
+      Gadget.raw_write(device, updated_input_report)
+      Process.sleep(@macro_sleep_between_key_behavior_ms)
+
+      updated_input_report
+    end)
+
+    # return the same state, we want to keep things as they were
+    state
   end
 
   defp handle_keycode_and_state(

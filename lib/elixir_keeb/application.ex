@@ -29,7 +29,7 @@ defmodule ElixirKeeb.Application do
     [
       # Children for all targets except host
       {ElixirKeeb.Gpio.Listener, []},
-      {ElixirKeeb.Usb.Reporter, [device]}
+      {ElixirKeeb.Usb.Reporter, device}
     ]
   end
 

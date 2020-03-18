@@ -37,8 +37,8 @@ If it borked the SSH connection, insert the micro SD card on the PC and burn the
 
 1. `export MIX_ENV=dev`
 2. `export MIX_TARGET=rpi0_hid`
-3. `export NERVES_NETWORK_PSK=atenas++`
-4. `export NERVES_NETWORK_SSID=ligustrum`
+3. `export NERVES_NETWORK_PSK=<password>`
+4. `export NERVES_NETWORK_SSID=<ssid>`
 5. `mix firmware.burn`
 
 ## Targets

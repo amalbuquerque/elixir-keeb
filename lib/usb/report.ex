@@ -5,6 +5,9 @@ defmodule ElixirKeeb.Usb.Report do
 
   @released_report_value 0x00
   @ignored 0x00
+  @empty_input_report <<0, 0, 0, 0, 0, 0, 0, 0>>
+
+  def empty_report, do: @empty_input_report
 
   def update_report(
         <<_mod, _, _key_0, _rest_keycodes::binary>> = previous_report,
