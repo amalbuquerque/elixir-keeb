@@ -1,10 +1,8 @@
 defmodule ElixirKeeb.Usb.Reporter do
   use GenServer
   require Logger
-  alias ElixirKeeb.{Utils, KeycodeBehavior}
+  alias ElixirKeeb.{Utils, KeycodeBehavior, Macros}
   alias ElixirKeeb.Usb.{Report, Gadget}
-
-  @macro_sleep_between_key_behavior_ms 10
 
   def start_link(device) do
     config = [
@@ -118,19 +116,7 @@ defmodule ElixirKeeb.Usb.Reporter do
        ) do
     Logger.debug("Macro key was just released. Keys: #{inspect(macro_keys)}")
 
-    # reset the input report
-    Gadget.raw_write(device, nil)
-
-    macro_keys
-    |> Enum.reduce(Report.empty_report(), fn keycode_and_state, input_report ->
-      updated_input_report = Report.update_report(input_report, keycode_and_state)
-
-      Logger.debug("Handling the macro step: #{inspect(keycode_and_state)}")
-      Gadget.raw_write(device, updated_input_report)
-      Process.sleep(@macro_sleep_between_key_behavior_ms)
-
-      updated_input_report
-    end)
+    Macros.send_macro_keys(device, macro_keys)
 
     # return the same state, we want to keep things as they were
     state

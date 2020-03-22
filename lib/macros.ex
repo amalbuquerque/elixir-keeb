@@ -1,7 +1,28 @@
 defmodule ElixirKeeb.Macros do
   alias ElixirKeeb.KeycodeBehavior
+  alias ElixirKeeb.Usb.{Report, Gadget}
   import ElixirKeeb.Usb.Keycodes,
     only: [is_normal?: 1, normal?: 1, is_modifier?: 1, modifier?: 1]
+  require Logger
+
+  @macro_sleep_between_key_behavior_ms 10
+
+  def send_macro_keys(device, macro_keys) do
+    # reset the input report
+    Gadget.raw_write(device, nil)
+
+    macro_keys
+    |> Enum.reduce(Report.empty_report(), fn keycode_and_state, input_report ->
+      updated_input_report = Report.update_report(input_report, keycode_and_state)
+
+      Logger.debug("Handling the macro step: #{inspect(keycode_and_state)}")
+
+      Gadget.raw_write(device, updated_input_report)
+      Process.sleep(@macro_sleep_between_key_behavior_ms)
+
+      updated_input_report
+    end)
+  end
 
   defmacro m(macro) when is_integer(macro) do
     quote do
