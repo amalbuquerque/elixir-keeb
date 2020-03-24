@@ -56,7 +56,32 @@ config :shoehorn,
 # See https://hexdocs.pm/ring_logger/readme.html for more information on
 # configuring ring_logger.
 
-config :logger, backends: [RingLogger]
+config :logger, backends: [
+  RingLogger,
+  {ElixirKeeb.Logs.PhoenixChannelBackend, :keyboard}
+]
+
+config :logger, :keyboard,
+  module: ElixirKeeb.UIWeb.Keyboard,
+  function: :broadcast_log_message
+
+config :elixir_keeb_ui,
+  namespace: ElixirKeeb.UI
+
+config :elixir_keeb_ui, ElixirKeeb.UIWeb.Endpoint,
+  http: [port: 4000],
+  server: true,
+  # TODO: We aren't validating the requests, because if this was true we were
+  # getting a 403 when trying to connect from to browser side via WebSockets.
+  # This isn't recommended and needs to be revisited.
+  check_origin: false,
+  debug_errors: true,
+  secret_key_base: "lyJTNxBjfH08ODTgiErmNZZw4jsR9Cv8lNMtvUrYtJULavMR3envdyBF6l2SsrYv",
+  render_errors: [view: ElixirKeeb.UIWeb.ErrorView, accepts: ~w(html json)],
+  pubsub: [name: ElixirKeeb.UI.PubSub, adapter: Phoenix.PubSub.PG2],
+  live_view: [signing_salt: "gqyVWgdq"]
+
+config :phoenix, :json_library, Jason
 
 if Mix.target() != :host do
   import_config "target.exs"
