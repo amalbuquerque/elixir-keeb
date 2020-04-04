@@ -48,19 +48,30 @@ defmodule ElixirKeeb.Layout do
     Logger.debug(inspect(matrix_module), label: "Matrix module it received via @matrix_module")
 
     pin_matrix = matrix_module.pin_matrix()
+    physical_matrix_kc_xy = matrix_module.physical_matrix_kc_xy()
 
-    result = layouts
-             |> Enum.map(&matrix_module.map/1)
-             |> Enum.zip(0..(length(layouts) - 1))
-             |> Enum.map(fn {layout_matrix, layer_index} ->
-               keycode_functions_for_layer(layout_matrix, layer_index, pin_matrix)
-             end)
-             |> List.flatten()
-             |> Enum.uniq()
-             |> Kernel.++([
-               catch_all_keycode_function(),
-               all_layouts_function()
-             ])
+    keycode_functions = layouts
+                        |> Enum.map(&matrix_module.map/1)
+                        |> Enum.zip(0..(length(layouts) - 1))
+                        |> Enum.map(fn {layout_matrix, layer_index} ->
+                          keycode_functions_for_layer(layout_matrix, layer_index, pin_matrix)
+                        end)
+                        |> List.flatten()
+                        |> Enum.uniq()
+                        |> Kernel.++([catch_all_keycode_function()])
+
+    keycode_by_physical_position_functions = layouts
+                        |> Utils.zip_with_index()
+                        |> Enum.map(fn {layout, layer_index} ->
+                          keycode_by_physical_position_functions_for_layer(
+                            layout, layer_index, physical_matrix_kc_xy)
+                        end)
+                        |> List.flatten()
+                        |> Enum.uniq()
+
+    result = keycode_functions
+             |> Kernel.++(keycode_by_physical_position_functions)
+             |> Kernel.++([all_layouts_function()])
              |> wrap_in_a_block()
 
     Logger.debug(inspect(result), label: "Layout macro module result")
@@ -85,6 +96,25 @@ defmodule ElixirKeeb.Layout do
       end
     end
     |> List.flatten()
+  end
+
+  def keycode_by_physical_position_functions_for_layer(layout, layer_index, physical_matrix_kc_xy) do
+    layout_and_physical_matrix_kc_xy = Utils.zip_matrices(layout, physical_matrix_kc_xy)
+
+    for {line, row_index} <- Utils.zip_with_index(layout_and_physical_matrix_kc_xy) do
+      for {{layout_keycode, physical_matrix_kc_xy}, col_index} <- Utils.zip_with_index(line) do
+        keycode_by_physical_position_function(row_index, col_index, physical_matrix_kc_xy, layer_index)
+      end
+    end
+    |> List.flatten()
+  end
+
+  defp keycode_by_physical_position_function(row_index, col_index, kc_xy, layer) do
+    quote do
+      def keycode_by_physical_position(unquote(row_index), unquote(col_index), unquote(layer)) do
+        keycode(unquote(kc_xy), unquote(layer))
+      end
+    end
   end
 
   defp keycode_function(kc_xy, layer, keycode) when transparent?(keycode) and layer > 0 do

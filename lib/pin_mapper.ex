@@ -179,9 +179,11 @@ defmodule ElixirKeeb.PinMapper do
 
     physical_matrix_kc_xy = physical_matrix_kc_xy(
       physical_matrix, lines: line_pins, columns: column_pins)
-      |> Enum.map(fn line ->
-        Enum.map(line, fn keycode -> quoted_var(keycode) end)
-      end)
+
+    physical_matrix_kc_xy_vars = physical_matrix_kc_xy
+                                 |> Enum.map(fn line ->
+                                   Enum.map(line, fn keycode -> quoted_var(keycode) end)
+                                 end)
 
 
     pin_matrix = pin_matrix(
@@ -192,12 +194,16 @@ defmodule ElixirKeeb.PinMapper do
                           Enum.map(line, fn keycode -> quoted_var(keycode) end)
                         end)
 
-    Logger.debug(inspect(physical_matrix_kc_xy), label: "Physical matrix")
+    Logger.debug(inspect(physical_matrix_kc_xy_vars), label: "Physical matrix")
     Logger.debug(inspect(quoted_pin_matrix), label: "Pin matrix")
 
     quote do
-      def map(unquote(physical_matrix_kc_xy)) do
+      def map(unquote(physical_matrix_kc_xy_vars)) do
         unquote(quoted_pin_matrix)
+      end
+
+      def physical_matrix_kc_xy() do
+        unquote(physical_matrix_kc_xy)
       end
 
       def pin_matrix() do
