@@ -66,7 +66,9 @@ config :logger, :keyboard,
   function: :broadcast_log_message
 
 config :elixir_keeb_ui,
-  namespace: ElixirKeeb.UI
+  namespace: ElixirKeeb.UI,
+  representation: {ElixirKeeb.Representation, :to_dashboard},
+  keyboard_layout: ElixirKeeb.CanonTypewriter.Layout
 
 config :elixir_keeb_ui, ElixirKeeb.UIWeb.Endpoint,
   http: [port: 4000],
