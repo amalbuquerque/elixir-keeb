@@ -2,7 +2,22 @@ defmodule ElixirKeeb.Logs.PhoenixChannelBackend do
   @moduledoc """
   Send log messages to front end
   """
+
+  @activate_after_secs 20
+
+  def activate(name) do
+    Logger.configure_backend({
+      ElixirKeeb.Logs.PhoenixChannelBackend,
+      name
+    }, ready: true)
+  end
+
   def init({__MODULE__, name}) do
+    spawn(fn ->
+      Process.sleep(@activate_after_secs * 1000)
+
+      activate(name)
+    end)
 
     {:ok, configure(name, [])}
   end
@@ -15,12 +30,16 @@ defmodule ElixirKeeb.Logs.PhoenixChannelBackend do
     {:ok, state}
   end
 
-  def handle_event({level, _gl, {Logger, msg, _ts, meta}}, state) when is_binary(msg) do
-    IO.puts("state: #{inspect(state)}")
+  def handle_event({_level, gl, {Logger, _, _, _}}, %{ready: false} = state) do
+    {:ok, state}
+  end
 
-    IO.puts("Log message level: #{level}")
-    IO.puts("Log message: #{inspect(msg)}")
-    IO.puts("Log metadata: #{inspect(meta)}")
+  def handle_event({level, _gl, {Logger, msg, _ts, _meta}},
+    %{module: module, function: function} = state) when is_binary(msg) do
+
+    message = "[#{level}] #{inspect(msg)}"
+
+    Kernel.apply(module, function, [message])
 
     {:ok, state}
   end
@@ -50,7 +69,7 @@ defmodule ElixirKeeb.Logs.PhoenixChannelBackend do
   end
 
   defp configure(name, opts) do
-    state = %{name: nil, module: nil, function: nil}
+    state = %{name: nil, module: nil, function: nil, ready: false}
 
     configure(name, opts, state)
   end
@@ -62,7 +81,8 @@ defmodule ElixirKeeb.Logs.PhoenixChannelBackend do
 
     module = Keyword.get(opts, :module)
     function = Keyword.get(opts, :function)
+    ready = Keyword.get(opts, :ready, false)
 
-    %{state | name: name, module: module, function: function}
+    %{state | name: name, module: module, function: function, ready: ready}
   end
 end
