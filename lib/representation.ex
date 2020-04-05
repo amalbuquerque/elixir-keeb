@@ -32,6 +32,7 @@ defmodule ElixirKeeb.Representation do
     |> Enum.map(fn {layer_key, layer_representation} ->
       {layer_key, [first_row | layer_representation]}
     end)
+    |> Enum.into(%{})
   end
 
   defp layer_to_dashboard({layer, layer_index}, keeb_module) do

@@ -1,3 +1,6 @@
+# 2020/03/21 11:40:05
+# Redid the circuit twice and B4 continues to not work
+# on the Canon Typewriter "PCB"
 b_pins = [
   {:BA, 4},
   {:B9, 17},
