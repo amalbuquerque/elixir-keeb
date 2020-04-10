@@ -58,7 +58,7 @@ config :shoehorn,
 
 config :logger, backends: [
   RingLogger,
-  {ElixirKeeb.Logs.PhoenixChannelBackend, :keyboard}
+  {ElixirKeeb.Communication.PhoenixChannelLoggerBackend, :keyboard}
 ]
 
 config :logger, :keyboard,

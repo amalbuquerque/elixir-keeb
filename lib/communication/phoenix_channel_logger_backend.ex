@@ -1,4 +1,4 @@
-defmodule ElixirKeeb.Logs.PhoenixChannelBackend do
+defmodule ElixirKeeb.Communication.PhoenixChannelLoggerBackend do
   @moduledoc """
   Send log messages to front end
   """
@@ -7,7 +7,7 @@ defmodule ElixirKeeb.Logs.PhoenixChannelBackend do
 
   def activate(name) do
     Logger.configure_backend({
-      ElixirKeeb.Logs.PhoenixChannelBackend,
+      ElixirKeeb.Communication.PhoenixChannelLoggerBackend,
       name
     }, ready: true)
   end
