@@ -3,6 +3,7 @@ defmodule ElixirKeeb.Usb.Reporter do
   require Logger
   alias ElixirKeeb.{Utils, KeycodeBehavior, Macros}
   alias ElixirKeeb.Usb.{Report, Gadget}
+  alias ElixirKeeb.Communication.WebDashboard
 
   def start_link(device) do
     config = [
@@ -69,14 +70,16 @@ defmodule ElixirKeeb.Usb.Reporter do
         kc_xy_keys,
         %{layout: layout_module} = state
       ) do
-    Enum.reduce(kc_xy_keys, state, fn {kc_xy, state}, %{layer: current_layer} = acc ->
+    Enum.reduce(kc_xy_keys, state, fn {kc_xy, action}, %{layer: current_layer} = state ->
       mapped_keycode = layout_module.keycode(kc_xy, current_layer)
 
-      handle_keycode_and_state(acc, {mapped_keycode, state})
+      WebDashboard.communicate({mapped_keycode, action})
+
+      handle_keycode_and_action(state, {mapped_keycode, action})
     end)
   end
 
-  defp handle_keycode_and_state(
+  defp handle_keycode_and_action(
          %{layer: current_layer} = state,
          {
            %KeycodeBehavior{action: :toggle, layer: layer_to_toggle},
@@ -86,7 +89,7 @@ defmodule ElixirKeeb.Usb.Reporter do
     %{state | previous_layer: current_layer, layer: layer_to_toggle}
   end
 
-  defp handle_keycode_and_state(
+  defp handle_keycode_and_action(
          %{previous_layer: previous_layer} = state,
          {
            %KeycodeBehavior{action: :toggle, layer: layer_to_toggle},
@@ -96,7 +99,7 @@ defmodule ElixirKeeb.Usb.Reporter do
     %{state | previous_layer: layer_to_toggle, layer: previous_layer}
   end
 
-  defp handle_keycode_and_state(
+  defp handle_keycode_and_action(
          %{} = state,
          {
            %KeycodeBehavior{action: :macro, layer: _layer_to_toggle},
@@ -107,7 +110,7 @@ defmodule ElixirKeeb.Usb.Reporter do
     state
   end
 
-  defp handle_keycode_and_state(
+  defp handle_keycode_and_action(
          %{device: device} = state,
          {
            %KeycodeBehavior{action: :macro, keys: macro_keys},
@@ -122,7 +125,7 @@ defmodule ElixirKeeb.Usb.Reporter do
     state
   end
 
-  defp handle_keycode_and_state(
+  defp handle_keycode_and_action(
          %{} = state,
          {
            %KeycodeBehavior{action: :lock, layer: _layer_to_toggle},
@@ -133,7 +136,7 @@ defmodule ElixirKeeb.Usb.Reporter do
     state
   end
 
-  defp handle_keycode_and_state(
+  defp handle_keycode_and_action(
          %{previous_layer: previous_layer, layer: current_layer} = state,
          {
            %KeycodeBehavior{action: :lock, layer: layer_to_lock},
@@ -151,11 +154,11 @@ defmodule ElixirKeeb.Usb.Reporter do
     end
   end
 
-  defp handle_keycode_and_state(
+  defp handle_keycode_and_action(
          %{input_report: previous_report} = state,
-         {_mapped_keycode, _keycode_state} = keycode_and_state
+         {_mapped_keycode, _keycode_action} = keycode_and_action
        ) do
-    input_report = Report.update_report(previous_report, keycode_and_state)
+    input_report = Report.update_report(previous_report, keycode_and_action)
 
     %{state | input_report: input_report}
   end

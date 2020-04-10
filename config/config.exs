@@ -39,6 +39,11 @@ config :elixir_keeb,
   reporter: ElixirKeeb.Usb.Reporter,
   layout: ElixirKeeb.CanonTypewriter.Layout
 
+config :elixir_keeb, :communication,
+  module: ElixirKeeb.UIWeb.Keyboard,
+  key_press_function: :broadcast_keydown,
+  key_release_function: :broadcast_keyup
+
 # Customize non-Elixir parts of the firmware. See
 # https://hexdocs.pm/nerves/advanced-configuration.html for details.
 

@@ -62,18 +62,18 @@ end
     {String.to_atom("layer_#{index}"), layer_representation}
   end
 
-  defp string_representation(keycode) when is_atom(keycode) do
+  def string_representation(keycode) when is_atom(keycode) do
     to_string(keycode) |> String.replace("kc_", "")
   end
 
-  defp string_representation(%ElixirKeeb.KeycodeBehavior{
+  def string_representation(%ElixirKeeb.KeycodeBehavior{
     action: action,
     layer: layer
   }) when action in [:toggle, :lock] do
     "{layer_#{layer}}"
   end
 
-  defp string_representation(%ElixirKeeb.KeycodeBehavior{
+  def string_representation(%ElixirKeeb.KeycodeBehavior{
     action: :macro,
     keys: keys
   }) do

@@ -30,7 +30,7 @@ defmodule ElixirKeeb.Communication.PhoenixChannelLoggerBackend do
     {:ok, state}
   end
 
-  def handle_event({_level, gl, {Logger, _, _, _}}, %{ready: false} = state) do
+  def handle_event({_level, _gl, {Logger, _, _, _}}, %{ready: false} = state) do
     {:ok, state}
   end
 
