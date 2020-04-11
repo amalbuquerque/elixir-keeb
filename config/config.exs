@@ -66,6 +66,12 @@ config :logger, backends: [
   {ElixirKeeb.Communication.PhoenixChannelLoggerBackend, :keyboard}
 ]
 
+config :logger,
+  compile_time_purge_matching: [
+      [level_lower_than: :info]
+  ],
+  level: :info
+
 config :logger, :keyboard,
   module: ElixirKeeb.UIWeb.Keyboard,
   function: :broadcast_log_message

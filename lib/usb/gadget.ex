@@ -66,11 +66,19 @@ defmodule ElixirKeeb.Usb.Gadget do
   end
 
   def raw_write(device, nil) do
-    File.write(device, @release_all_keys)
+    result = File.write(device, @release_all_keys)
+
+    Logger.debug("Gadget.raw_write to #{device} with 'all-zeros' resulted in #{inspect(result)}")
+
+    result
   end
 
   def raw_write(device, to_write) do
-    File.write(device, to_write)
+    result = File.write(device, to_write)
+
+    Logger.debug("Gadget.raw_write to #{device} with '#{inspect(to_write)}' resulted in #{inspect(result)}")
+
+    result
   end
 
   defp current_devices, do: File.ls(@devices_path)

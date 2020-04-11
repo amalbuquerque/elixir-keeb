@@ -73,7 +73,9 @@ defmodule ElixirKeeb.Usb.Reporter do
     Enum.reduce(kc_xy_keys, state, fn {kc_xy, action}, %{layer: current_layer} = state ->
       mapped_keycode = layout_module.keycode(kc_xy, current_layer)
 
+      Logger.debug("Will now communicate to dashboard #{inspect({mapped_keycode, action})}...")
       WebDashboard.communicate({mapped_keycode, action})
+      Logger.debug("Just communicated to dashboard #{inspect({mapped_keycode, action})}")
 
       handle_keycode_and_action(state, {mapped_keycode, action})
     end)
