@@ -18,10 +18,12 @@ defmodule ElixirKeeb.Usb.Reporter do
   def init([device: device, layout: layout_module] = config) do
     Logger.debug("⌨️ Starting Usb.Reporter ⌨️,\n#{inspect(config)}")
 
+    {:ok, device_pid} = File.open(device, [:write])
+
     {
       :ok,
       %{
-        device: device,
+        device: device_pid,
         layout: layout_module,
         input_report: Report.empty_report(),
         previous_layer: 0,
