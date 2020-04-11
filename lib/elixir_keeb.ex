@@ -13,6 +13,6 @@ defmodule ElixirKeeb do
 
   """
   def hello do
-    [:world, "2020/01/23 19:27:55 @ Cancún"]
+    [:world, "2020/04/11 10:56:16 @ Home"]
   end
 end

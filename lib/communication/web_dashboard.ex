@@ -1,11 +1,12 @@
 defmodule ElixirKeeb.Communication.WebDashboard do
   alias ElixirKeeb.Representation
+  require Logger
 
-  @web_dashboard_module Application.get_env(:elixir_keeb, :module)
-  @key_press_function Application.get_env(:elixir_keeb, :key_press_function)
-  @key_release_function Application.get_env(:elixir_keeb, :key_release_function)
+  @web_dashboard_module Application.get_env(:elixir_keeb, :communication)[:module]
+  @key_press_function Application.get_env(:elixir_keeb, :communication)[:key_press_function]
+  @key_release_function Application.get_env(:elixir_keeb, :communication)[:key_release_function]
 
-  def communicate({_keycode, _action} = keycode_and_action) do
+  def communicate({keycode, action}) when action in [:pressed, :released] do
     case is_nil(@web_dashboard_module) or
            is_nil(@key_press_function) or
            is_nil(@key_release_function) do
@@ -13,8 +14,13 @@ defmodule ElixirKeeb.Communication.WebDashboard do
         :nop
 
       _ ->
+
+        string_keycode = Representation.string_representation(keycode)
+
+        Logger.debug("Communicating {#{string_keycode}, #{action}} to Web Dashboard... (original keycode: #{inspect(keycode)})")
+
         _communicate(
-          keycode_and_action,
+          {string_keycode, action},
           @web_dashboard_module,
           @key_press_function,
           @key_release_function
@@ -23,24 +29,20 @@ defmodule ElixirKeeb.Communication.WebDashboard do
   end
 
   defp _communicate(
-         {keycode, :pressed},
+         {string_keycode, :pressed} = key_and_action,
          module,
          key_press_function,
          _key_release_function
        ) do
-    string_keycode = Representation.string_representation(keycode)
-
     Kernel.apply(module, key_press_function, [string_keycode])
   end
 
   defp _communicate(
-         {keycode, :released},
+         {string_keycode, :released},
          module,
          _key_press_function,
          key_release_function
        ) do
-    string_keycode = Representation.string_representation(keycode)
-
     Kernel.apply(module, key_release_function, [string_keycode])
   end
 end
