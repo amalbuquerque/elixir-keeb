@@ -20,7 +20,7 @@ defmodule ElixirKeeb.Gpio.Listener do
           listener_wait_ms: listener_wait_ms
         ] = args
       ) do
-    Logger.debug("⌨️ Starting Gpio.Listener ⌨️,\n#{inspect(args)}")
+    Logger.info("⌨️ Starting Gpio.Listener ⌨️,\n#{inspect(args)}")
 
     line_ports = Gpio.open_ports(line_pins, :output)
     column_ports = Gpio.open_ports(column_pins, :input)
