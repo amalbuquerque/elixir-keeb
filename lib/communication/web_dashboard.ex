@@ -29,7 +29,7 @@ defmodule ElixirKeeb.Communication.WebDashboard do
   end
 
   defp _communicate(
-         {string_keycode, :pressed} = key_and_action,
+         {string_keycode, :pressed},
          module,
          key_press_function,
          _key_release_function

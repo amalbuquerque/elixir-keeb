@@ -2,7 +2,6 @@ defmodule ElixirKeeb.Gpio.Listener do
   use GenServer
   require Logger
   alias ElixirKeeb.{Utils, Gpio}
-  alias Circuits.GPIO, as: CircuitsGPIO
 
   @default_listener_wait_ms 10
 

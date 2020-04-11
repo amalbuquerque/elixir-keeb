@@ -65,7 +65,7 @@ defmodule ElixirKeeb.Usb.Gadget do
     end)
   end
 
-  def raw_write(device, nil) do
+  def raw_write(device, nil) when is_binary(device) do
     result = File.write(device, @release_all_keys)
 
     Logger.debug("Gadget.raw_write to #{device} with 'all-zeros' resulted in #{inspect(result)}")
@@ -73,10 +73,26 @@ defmodule ElixirKeeb.Usb.Gadget do
     result
   end
 
-  def raw_write(device, to_write) do
+  def raw_write(device, nil) when is_pid(device) do
+    result = IO.write(device, @release_all_keys)
+
+    Logger.debug("Gadget.raw_write to #{inspect(device)} with 'all-zeros' resulted in #{inspect(result)}")
+
+    result
+  end
+
+  def raw_write(device, to_write) when is_binary(device) do
     result = File.write(device, to_write)
 
     Logger.debug("Gadget.raw_write to #{device} with '#{inspect(to_write)}' resulted in #{inspect(result)}")
+
+    result
+  end
+
+  def raw_write(device, to_write) when is_pid(device) do
+    result = IO.write(device, to_write)
+
+    Logger.debug("Gadget.raw_write to #{inspect(device)} with '#{inspect(to_write)}' resulted in #{inspect(result)}")
 
     result
   end

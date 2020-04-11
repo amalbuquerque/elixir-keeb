@@ -3,8 +3,7 @@ defmodule ElixirKeeb.Layout do
   """
 
   require Logger
-  alias ElixirKeeb.{Utils, KeycodeBehavior, Macros}
-  alias ElixirKeeb.Usb.Keycodes
+  alias ElixirKeeb.{Utils, KeycodeBehavior}
   import ElixirKeeb.Usb.Keycodes, only: [transparent?: 1]
 
   defmacro toggle_layer(layer) when is_integer(layer) do
@@ -102,7 +101,7 @@ defmodule ElixirKeeb.Layout do
     layout_and_physical_matrix_kc_xy = Utils.zip_matrices(layout, physical_matrix_kc_xy)
 
     for {line, row_index} <- Utils.zip_with_index(layout_and_physical_matrix_kc_xy) do
-      for {{layout_keycode, physical_matrix_kc_xy}, col_index} <- Utils.zip_with_index(line) do
+      for {{_layout_keycode, physical_matrix_kc_xy}, col_index} <- Utils.zip_with_index(line) do
         keycode_by_physical_position_function(row_index, col_index, physical_matrix_kc_xy, layer_index)
       end
     end
