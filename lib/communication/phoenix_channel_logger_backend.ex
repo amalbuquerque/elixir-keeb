@@ -3,7 +3,7 @@ defmodule ElixirKeeb.Communication.PhoenixChannelLoggerBackend do
   Send log messages to front end
   """
 
-  @activate_after_secs 20
+  @activate_after_secs 40
 
   def activate(name) do
     Logger.configure_backend({

@@ -7,16 +7,24 @@ Elixir keyboard firmware.
 This firmware supports:
 
 - Working like a standard keyboard, ie., its layout having a single layer;
-- Multiple layers (toggled or locked by a key press).
+- Multiple layers (toggled or locked by a key press);
+- User-defined macros;
+- Web dashboard (shows keys currently pressed + log messages).
+
+## TODO
+
+- Macros have an identifier, passed to the dashboard through the `Representation` module;
+- Web dashboard highlights all keys that are pressed, not only the first one
+- Fully programmable macros (run arbitrary code, instead of just sending keypresses);
+- Bump Nerves versions;
+- Tap to send a key press, keep pressed to activate a layer or send a modifier;
+- Record macros on the fly.
 
 ## Wishlist
 
-- Tap to send a key press, keep pressed to activate a layer or send a modifier;
-- Web dashboard;
-- User-defined macros;
 - Activate LEDs;
 - Debug mode;
-- Record macros on the fly.
+- Handles host going to sleep and waking up.
 
 ## Build steps
 
