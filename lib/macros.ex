@@ -27,6 +27,7 @@ defmodule ElixirKeeb.Macros do
   defmacro m(macro) when is_integer(macro) do
     quote do
       %KeycodeBehavior{
+        identifier: unquote(macro),
         action: :macro,
         keys: Enum.at(@macros, unquote(macro))
               |> Enum.map(&unquote(__MODULE__).convert_to_keycode/1)

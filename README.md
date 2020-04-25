@@ -10,10 +10,10 @@ This firmware supports:
 - Multiple layers (toggled or locked by a key press);
 - User-defined macros;
 - Web dashboard (shows keys currently pressed + log messages).
+    * Macros have an identifier, passed to the dashboard through the `Representation` module;
 
 ## TODO
 
-- Macros have an identifier, passed to the dashboard through the `Representation` module;
 - Web dashboard highlights all keys that are pressed, not only the first one
 - Fully programmable macros (run arbitrary code, instead of just sending keypresses);
 - Bump Nerves versions;

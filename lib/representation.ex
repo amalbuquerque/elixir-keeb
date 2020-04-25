@@ -75,17 +75,8 @@ end
 
   def string_representation(%ElixirKeeb.KeycodeBehavior{
     action: :macro,
-    keys: keys
+    identifier: macro_id,
   }) do
-    # TODO: Change to use the macro ID instead
-    # of macro keys
-    keys = keys
-           |> Keyword.keys()
-           |> Enum.map(&to_string/1)
-           |> Enum.uniq()
-           |> Enum.map(fn "kc_" <> key -> key end)
-           |> Enum.join("")
-
-    "macro_#{keys}"
+    "macro_#{macro_id}"
   end
 end
