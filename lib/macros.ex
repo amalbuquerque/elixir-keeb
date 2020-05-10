@@ -12,6 +12,8 @@ defmodule ElixirKeeb.Macros do
     Gadget.raw_write(device, nil)
 
     macro_keys
+    |> Enum.map(&convert_to_keycode/1)
+    |> List.flatten()
     |> Enum.reduce(Report.empty_report(), fn keycode_and_state, input_report ->
       updated_input_report = Report.update_report(input_report, keycode_and_state)
 
@@ -24,14 +26,33 @@ defmodule ElixirKeeb.Macros do
     end)
   end
 
+  def macro_function(macro_id, macro_content) when is_binary(macro_content) do
+    macro_content = String.graphemes(macro_content)
+    macro_function(macro_id, macro_content)
+  end
+
+  def macro_function(macro_id, macro_content) when is_list(macro_content) do
+    function_name = macro_function_name(macro_id)
+
+    quote do
+      def unquote(function_name)(state) do
+        {unquote(macro_content), state}
+      end
+    end
+  end
+
+  def macro_function_name(macro_id) when is_integer(macro_id) do
+    String.to_atom("macro_#{macro_id}")
+  end
+
   defmacro m(macro) when is_integer(macro) do
+    function_name = macro_function_name(macro)
+
     quote do
       %KeycodeBehavior{
         identifier: unquote(macro),
         action: :macro,
-        keys: Enum.at(@macros, unquote(macro))
-              |> Enum.map(&unquote(__MODULE__).convert_to_keycode/1)
-              |> List.flatten()
+        function: &__MODULE__.unquote(function_name)/1
       }
     end
   end

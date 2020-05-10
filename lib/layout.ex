@@ -3,7 +3,11 @@ defmodule ElixirKeeb.Layout do
   """
 
   require Logger
-  alias ElixirKeeb.{Utils, KeycodeBehavior}
+  alias ElixirKeeb.{
+    Utils,
+    Macros,
+    KeycodeBehavior
+  }
   import ElixirKeeb.Usb.Keycodes, only: [transparent?: 1]
 
   defmacro toggle_layer(layer) when is_integer(layer) do
@@ -40,10 +44,12 @@ defmodule ElixirKeeb.Layout do
 
   defmacro __before_compile__(%Macro.Env{module: module} = env) do
     layouts = Module.get_attribute(module, :layouts)
+    macros = Module.get_attribute(module, :macros) || []
     matrix_module = Module.get_attribute(module, :matrix_module)
                     |> Macro.expand(env)
 
     Logger.debug(inspect(layouts), label: "Layouts it received via @layouts")
+    Logger.debug(inspect(macros), label: "Macros module it received via @macros")
     Logger.debug(inspect(matrix_module), label: "Matrix module it received via @matrix_module")
 
     pin_matrix = matrix_module.pin_matrix()
@@ -68,8 +74,13 @@ defmodule ElixirKeeb.Layout do
                         |> List.flatten()
                         |> Enum.uniq()
 
+    macros_functions = macros
+                       |> Utils.zip_with_index()
+                       |> Enum.map(fn {macro_content, index} -> Macros.macro_function(index, macro_content) end)
+
     result = keycode_functions
              |> Kernel.++(keycode_by_physical_position_functions)
+             |> Kernel.++(macros_functions)
              |> Kernel.++([all_layouts_function()])
              |> wrap_in_a_block()
 

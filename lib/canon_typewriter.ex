@@ -35,7 +35,9 @@ defmodule ElixirKeeb.CanonTypewriter.Layout do
       {"lshift", :pressed},
       "1",
       {"lshift", :released},
-    ]
+    ],
+    # macro 3
+    "Hello, world!"
   ]
 
   @layouts [

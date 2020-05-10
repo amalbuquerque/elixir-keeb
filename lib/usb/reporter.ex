@@ -117,11 +117,13 @@ defmodule ElixirKeeb.Usb.Reporter do
   defp handle_keycode_and_action(
          %{device: device} = state,
          {
-           %KeycodeBehavior{action: :macro, keys: macro_keys},
+           %KeycodeBehavior{action: :macro, function: macro_function},
            :released
          }
        ) do
-    Logger.debug("Macro key was just released. Keys: #{inspect(macro_keys)}")
+    {macro_keys, new_state} = macro_function.(state)
+
+    Logger.debug("Macro key was just released. Keys: #{inspect(macro_keys)}, this was the new state from the macro #{inspect(new_state)} (not being used yet)")
 
     Macros.send_macro_keys(device, macro_keys)
 

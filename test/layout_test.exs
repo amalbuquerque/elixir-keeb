@@ -7,6 +7,7 @@ defmodule ElixirKeeb.LayoutTest do
   @matrix TestModule.First.Matrix
   @layer0 0
   @layer1 1
+  @state %{}
 
   describe "keycode/2 provided by the `use Layout`" do
     test "the `keycode/2` returns the expected keycode" do
@@ -39,18 +40,16 @@ defmodule ElixirKeeb.LayoutTest do
                             _ -> false
                           end)
 
-      assert [
+      [
         # macro 0
         %KeycodeBehavior{
           action: :macro,
-          keys: macro_keys,
+          function: macro_0,
           identifier: 0
         },
-        # macro 1, identical to macro 0
-        # but using string keycodes instead of the immediate keycode
         %KeycodeBehavior{
           action: :macro,
-          keys: macro_keys,
+          function: macro_1,
           identifier: 1
         },
         %KeycodeBehavior{
@@ -59,29 +58,42 @@ defmodule ElixirKeeb.LayoutTest do
         }
       ] = keycode_behaviors
 
-      # macro is "Elixir!"
-      # 7 chars * 2 (pressed/released) + 2 Shift * 2 (press/released) = 18
+      {macro_0_keys, @state} = macro_0.(@state)
+      {macro_1_keys, @state} = macro_1.(@state)
+
+      # macro 1, identical to macro 0
+      # but using string keycodes instead of the immediate keycode
+
+      # macro 0
       assert [
         {:kc_lshift, :pressed},
-        {:kc_e, :pressed},
-        {:kc_e, :released},
+        :kc_e,
         {:kc_lshift, :released},
-        {:kc_l, :pressed},
-        {:kc_l, :released},
-        {:kc_i, :pressed},
-        {:kc_i, :released},
-        {:kc_x, :pressed},
-        {:kc_x, :released},
-        {:kc_i, :pressed},
-        {:kc_i, :released},
-        {:kc_r, :pressed},
-        {:kc_r, :released},
+        :kc_l,
+        :kc_i,
+        :kc_x,
+        :kc_i,
+        :kc_r,
         {:kc_lshift, :pressed},
-        {:kc_1, :pressed},
-        {:kc_1, :released},
+        :kc_1,
         {:kc_lshift, :released},
-      ] == macro_keys
-    end
+      ] == macro_0_keys
+
+      # macro 1
+      assert [
+        {"lshift", :pressed},
+        "e",
+        {"lshift", :released},
+        "l",
+        "i",
+        "x",
+        "i",
+        "r",
+        {"lshift", :pressed},
+        "1",
+        {"lshift", :released},
+      ] == macro_1_keys
+  end
 
     test "the `keycode/2` for the layer 1 returns the expected keycode, even for transparent keycodes" do
       pin_matrix = @matrix.pin_matrix()

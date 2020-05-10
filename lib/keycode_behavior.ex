@@ -1,3 +1,3 @@
 defmodule ElixirKeeb.KeycodeBehavior do
-  defstruct [:action, :layer, :keys, :identifier]
+  defstruct [:action, :layer, :function, :identifier]
 end
