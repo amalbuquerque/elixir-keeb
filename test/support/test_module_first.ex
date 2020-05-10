@@ -11,6 +11,13 @@ defmodule TestModule.First.Matrix do
   @column_pins [P2: 2, P4: 4, P6: 6, P7: 7]
 end
 
+defmodule TestModule.First.Macros do
+  def xpto(state) do
+
+    {"Hello from custom macro", state}
+  end
+end
+
 defmodule TestModule.First.Layout do
   use ElixirKeeb.Layout, matrix: TestModule.First.Matrix
 
@@ -42,7 +49,9 @@ defmodule TestModule.First.Layout do
       {"lshift", :pressed},
       "1",
       {"lshift", :released},
-    ]
+    ],
+    # macro 2
+    &TestModule.First.Macros.xpto/1
   ]
 
   @layouts [
@@ -59,7 +68,7 @@ defmodule TestModule.First.Layout do
     [ # layer 2
       [:kc_l, :kc_m, :kc_n, :kc_o],
       [:kc_p, :kc_q, :kc_r, :kc_s],
-      [:____, :kc_u, :kc_v, :____]
+      [:____, m(2), :kc_v, :____]
     ],
   ]
 end

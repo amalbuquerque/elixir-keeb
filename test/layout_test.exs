@@ -29,16 +29,13 @@ defmodule ElixirKeeb.LayoutTest do
     end
 
     test "the `keycode/2` returns a %KeycodeBehavior{} expanded from a `toggle_layer(x)` and a `m(y)`" do
-      [layer0 | _rest] = @subject.all_layouts()
-
-      mapped_keycodes = @matrix.map(layer0)
-                        |> List.flatten()
-
-      keycode_behaviors = mapped_keycodes
-                          |> Enum.filter(fn
-                            %KeycodeBehavior{} -> true
-                            _ -> false
-                          end)
+      keycode_behaviors = @subject.all_layouts()
+                         |> Enum.flat_map(&@matrix.map/1)
+                         |> List.flatten()
+                         |> Enum.filter(fn
+                           %KeycodeBehavior{} -> true
+                           _ -> false
+                         end)
 
       [
         # macro 0
@@ -55,6 +52,11 @@ defmodule ElixirKeeb.LayoutTest do
         %KeycodeBehavior{
           action: :toggle,
           layer: 1
+        },
+        %KeycodeBehavior{
+          action: :macro,
+          function: macro_2,
+          identifier: 2
         }
       ] = keycode_behaviors
 
@@ -93,6 +95,8 @@ defmodule ElixirKeeb.LayoutTest do
         "1",
         {"lshift", :released},
       ] == macro_1_keys
+
+      assert {"Hello from custom macro", @state} == macro_2.(@state)
   end
 
     test "the `keycode/2` for the layer 1 returns the expected keycode, even for transparent keycodes" do

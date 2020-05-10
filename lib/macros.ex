@@ -41,6 +41,16 @@ defmodule ElixirKeeb.Macros do
     end
   end
 
+  def macro_function(macro_id, macro_content) when is_function(macro_content) do
+    function_name = macro_function_name(macro_id)
+
+    quote do
+      def unquote(function_name)(state) do
+        unquote(macro_content).(state)
+      end
+    end
+  end
+
   def macro_function_name(macro_id) when is_integer(macro_id) do
     String.to_atom("macro_#{macro_id}")
   end

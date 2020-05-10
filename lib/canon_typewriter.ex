@@ -14,6 +14,12 @@ defmodule ElixirKeeb.CanonTypewriter.Matrix do
   @column_pins Application.get_env(:elixir_keeb, :column_pins)
 end
 
+defmodule ElixirKeeb.CanonTypewriter.Macros do
+  def my_macro(state) do
+    {"Hello from macro function!", state}
+  end
+end
+
 defmodule ElixirKeeb.CanonTypewriter.Layout do
   use ElixirKeeb.Layout, matrix: ElixirKeeb.CanonTypewriter.Matrix
 
@@ -37,7 +43,9 @@ defmodule ElixirKeeb.CanonTypewriter.Layout do
       {"lshift", :released},
     ],
     # macro 3
-    "Hello, world!"
+    "Hello, world!",
+    # macro 4
+    &ElixirKeeb.CanonTypewriter.Macros.my_macro/1,
   ]
 
   @layouts [
@@ -53,7 +61,7 @@ defmodule ElixirKeeb.CanonTypewriter.Layout do
     [ # layer 1
       [:____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____],
       [:____, :kc_1, :kc_2, :kc_3, :kc_4, :kc_5, :kc_6, :kc_7, :kc_8, :kc_9, :kc_0, :kc_tab, :kc_bslash, :____],
-      [:____, m(0), m(1), m(2), :____, :____, :____, :____, :____, :____, :____, :____, :____, :____],
+      [:____, m(0), m(1), m(2), m(3), m(4), :____, :____, :____, :____, :____, :____, :____, :____],
       [:____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____],
       [:____, :kc_x, :____]
     ]
