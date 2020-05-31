@@ -56,19 +56,19 @@ defmodule TestModule.First.Layout do
 
   @layouts [
     [ # layer 0
-      [:kc_a, :kc_b, :kc_c, m(0)           ],
-      [:kc_e, :kc_f, :kc_g, m(1)           ],
-      [:kc_i, :kc_j, :kc_k, toggle_layer(1)]
+      [:kc_a, :kc_b,           :kc_c, m(0)           ],
+      [:kc_e, :kc_f,           :kc_g, m(1)           ],
+      [:kc_i, toggle_layer(2), :kc_k, toggle_layer(1)]
     ],
     [ # layer 1
-      [:kc_1, :kc_2, :kc_3, :kc_4],
-      [:kc_5, :kc_6, :kc_7, :kc_8],
-      [:kc_9, :kc_0, :____, :____]
+      [:kc_1,     :kc_2, :kc_3, :kc_4],
+      [record(1), :kc_6, :kc_7, :kc_8],
+      [:kc_9,     :kc_0, :____, :____]
     ],
     [ # layer 2
-      [:kc_l, :kc_m, :kc_n, :kc_o],
-      [:kc_p, :kc_q, :kc_r, :kc_s],
-      [:____, m(2), :kc_v, :____]
+      [:kc_l,     :kc_m, :kc_n, :kc_o],
+      [replay(1), :kc_q, :kc_r, :kc_s],
+      [:____,     m(2),  :kc_v, :____]
     ],
   ]
 end

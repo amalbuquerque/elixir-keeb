@@ -35,7 +35,7 @@ defmodule ElixirKeeb.Layout do
     quote do
       import unquote(__MODULE__)
       require unquote(__MODULE__)
-      import ElixirKeeb.Macros, only: [m: 1]
+      import ElixirKeeb.Macros, only: [m: 1, record: 1, replay: 1]
       require ElixirKeeb.Macros
 
       @before_compile unquote(__MODULE__)

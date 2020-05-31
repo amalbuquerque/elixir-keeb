@@ -45,6 +45,10 @@ defmodule ElixirKeeb.LayoutTest do
           identifier: 0
         },
         %KeycodeBehavior{
+          action: :toggle,
+          layer: 2,
+        },
+        %KeycodeBehavior{
           action: :macro,
           function: macro_1,
           identifier: 1
@@ -52,6 +56,14 @@ defmodule ElixirKeeb.LayoutTest do
         %KeycodeBehavior{
           action: :toggle,
           layer: 1
+        },
+        %KeycodeBehavior{
+          action: :record,
+          identifier: 1
+        },
+        %KeycodeBehavior{
+          action: :replay,
+          identifier: 1
         },
         %KeycodeBehavior{
           action: :macro,

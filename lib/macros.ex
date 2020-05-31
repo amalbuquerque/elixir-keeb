@@ -67,6 +67,24 @@ defmodule ElixirKeeb.Macros do
     end
   end
 
+  defmacro record(slot) when is_integer(slot) do
+    quote do
+      %KeycodeBehavior{
+        action: :record,
+        identifier: unquote(slot)
+      }
+    end
+  end
+
+  defmacro replay(slot) when is_integer(slot) do
+    quote do
+      %KeycodeBehavior{
+        action: :replay,
+        identifier: unquote(slot)
+      }
+    end
+  end
+
   def convert_to_keycode(keycode) when is_binary(keycode) do
     maybe_keycode = String.to_atom("kc_#{keycode}")
 

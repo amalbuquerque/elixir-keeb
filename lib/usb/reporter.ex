@@ -2,6 +2,7 @@ defmodule ElixirKeeb.Usb.Reporter do
   use GenServer
   require Logger
   alias ElixirKeeb.{Utils, KeycodeBehavior, Macros}
+  alias ElixirKeeb.Macros.Recordings
   alias ElixirKeeb.Usb.{Report, Gadget}
   alias ElixirKeeb.Communication.WebDashboard
 
@@ -27,7 +28,8 @@ defmodule ElixirKeeb.Usb.Reporter do
         layout: layout_module,
         input_report: Report.empty_report(),
         previous_layer: 0,
-        layer: 0
+        layer: 0,
+        activity: :regular,
       }
     }
   end
@@ -127,8 +129,45 @@ defmodule ElixirKeeb.Usb.Reporter do
 
     Macros.send_macro_keys(device, macro_keys)
 
-    # return the same state, we want to keep things as they were
+    # the macro function might have updated the state
+    new_state
+  end
+
+  defp handle_keycode_and_action(
+         %{} = state,
+         {
+           %KeycodeBehavior{action: :record, identifier: _slot},
+           :pressed
+         }
+       ) do
+    # we only do something when the record key is released
     state
+  end
+
+  defp handle_keycode_and_action(
+         %{device: device, activity: {:recording, slot}} = state,
+         {
+           %KeycodeBehavior{action: :record, identifier: _},
+           :released
+         }
+       ) do
+
+    Logger.debug("Just recorded keypresses in slot #{slot}...")
+
+    %{state | activity: :regular}
+  end
+
+  defp handle_keycode_and_action(
+         %{device: device, activity: :regular} = state,
+         {
+           %KeycodeBehavior{action: :record, identifier: slot},
+           :released
+         }
+       ) do
+
+    Logger.debug("Will now record keypresses on slot #{slot}...")
+
+    %{state | activity: {:recording, slot}}
   end
 
   defp handle_keycode_and_action(
@@ -166,6 +205,8 @@ defmodule ElixirKeeb.Usb.Reporter do
        ) do
     input_report = Report.update_report(previous_report, keycode_and_action)
 
-    %{state | input_report: input_report}
+    state
+    |> Recordings.maybe_record(keycode_and_action)
+    |> Map.put(:input_report, input_report)
   end
 end
