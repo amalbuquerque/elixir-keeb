@@ -7,6 +7,13 @@ use Mix.Config
 
 config :elixir_keeb, target: Mix.target()
 
+config :elixir_keeb, :modules,
+  gadget: ElixirKeeb.Usb.Gadget,
+  report: ElixirKeeb.Usb.Report,
+  macros: ElixirKeeb.Macros,
+  recordings: ElixirKeeb.Macros.Recordings,
+  web_dashboard: ElixirKeeb.Communication.WebDashboard
+
 config :elixir_keeb,
   listener_wait_ms: 0,
   line_pins: [
@@ -98,4 +105,8 @@ config :phoenix, :json_library, Jason
 
 if Mix.target() != :host do
   import_config "target.exs"
+end
+
+if Mix.env() == :test do
+  import_config "#{Mix.env()}.exs"
 end

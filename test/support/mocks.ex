@@ -1,0 +1,6 @@
+Mox.defmock(ElixirKeeb.LayoutMock, for: ElixirKeeb.Layout.Behaviour)
+Mox.defmock(ElixirKeeb.Usb.GadgetMock, for: ElixirKeeb.Usb.Gadget)
+Mox.defmock(ElixirKeeb.Usb.ReportMock, for: ElixirKeeb.Usb.Report)
+Mox.defmock(ElixirKeeb.MacrosMock, for: ElixirKeeb.Macros)
+Mox.defmock(ElixirKeeb.Macros.RecordingsMock, for: ElixirKeeb.Macros.Recordings)
+Mox.defmock(ElixirKeeb.Communication.WebDashboardMock, for: ElixirKeeb.Communication.WebDashboard)
