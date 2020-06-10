@@ -38,6 +38,8 @@ defmodule ElixirKeeb.Layout do
       import ElixirKeeb.Macros, only: [m: 1, record: 1, replay: 1]
       require ElixirKeeb.Macros
 
+      @behaviour ElixirKeeb.Layout.Behaviour
+
       @before_compile unquote(__MODULE__)
     end
   end
@@ -129,6 +131,7 @@ defmodule ElixirKeeb.Layout do
 
   defp keycode_function(kc_xy, layer, keycode) when transparent?(keycode) and layer > 0 do
     quote do
+      @impl true
       def keycode(unquote(kc_xy), unquote(layer)) do
         # if transparent, we just call the `keycode/2` for the previous layer
         keycode(unquote(kc_xy), unquote(layer-1))
