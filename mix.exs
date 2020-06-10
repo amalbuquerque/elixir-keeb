@@ -57,6 +57,7 @@ defmodule ElixirKeeb.MixProject do
       {:nerves_system_rpi0, "~> 1.8", runtime: false, targets: :rpi0},
       {:nerves_system_rpi0_hid, path: "../nerves_custom_rpi0", runtime: false, targets: :rpi0_hid},
       {:mix_test_watch, "~> 1.0.2", only: :test},
+      {:mox, "~> 0.5.2", only: :test},
       {:elixir_keeb_ui, path: "../elixir_keeb_ui", targets: @all_targets},
     ]
   end
