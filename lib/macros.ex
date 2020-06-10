@@ -5,6 +5,11 @@ defmodule ElixirKeeb.Macros do
     only: [is_normal?: 1, normal?: 1, is_modifier?: 1, modifier?: 1]
   require Logger
 
+  @type input_report :: bitstring()
+  @type device :: pid()
+  @type keys :: list()
+  @callback send_macro_keys(device, keys) :: input_report
+
   @macro_sleep_between_key_behavior_ms 10
 
   def send_macro_keys(device, macro_keys) do

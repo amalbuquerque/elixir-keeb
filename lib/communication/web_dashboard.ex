@@ -2,6 +2,10 @@ defmodule ElixirKeeb.Communication.WebDashboard do
   alias ElixirKeeb.Representation
   require Logger
 
+  @type keycode :: atom()
+  @type action :: :pressed | :released
+  @callback communicate({keycode, action}) :: :nop | term()
+
   @web_dashboard_module Application.get_env(:elixir_keeb, :communication)[:module]
   @key_press_function Application.get_env(:elixir_keeb, :communication)[:key_press_function]
   @key_release_function Application.get_env(:elixir_keeb, :communication)[:key_release_function]

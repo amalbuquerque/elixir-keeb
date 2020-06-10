@@ -3,6 +3,13 @@ defmodule ElixirKeeb.Usb.Report do
   alias ElixirKeeb.Usb.Keycodes
   import ElixirKeeb.Usb.Keycodes, only: [modifier?: 1]
 
+  @type input_report :: bitstring()
+  @type keycode :: atom()
+  @type action :: atom()
+  @type keycode_and_action :: {keycode, action}
+  @callback empty_report() :: input_report
+  @callback update_report(input_report, keycode_and_action) :: input_report
+
   @released_report_value 0x00
   @ignored 0x00
   @empty_input_report <<0, 0, 0, 0, 0, 0, 0, 0>>

@@ -1,4 +1,10 @@
 defmodule ElixirKeeb.Macros.Recordings do
+  @type state :: map()
+  @type keycode :: atom()
+  @type action :: atom()
+  @type keycode_and_action :: {keycode, action}
+  @callback maybe_record(state, keycode_and_action) :: state
+
   def maybe_record(%{activity: :regular} = state, _keycode_and_action),
     do: state
 
