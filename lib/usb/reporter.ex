@@ -46,6 +46,14 @@ defmodule ElixirKeeb.Usb.Reporter do
   end
 
   @impl true
+  def handle_call({:new_state, new_state}, _from, state) do
+    Logger.debug(
+      "Setting current state as: #{inspect(new_state)}")
+
+    {:reply, :ok, new_state}
+  end
+
+  @impl true
   def handle_cast(
         {:keys_pressed, kc_xy_keys},
         %{
@@ -179,6 +187,35 @@ defmodule ElixirKeeb.Usb.Reporter do
     Logger.debug("Will now record keypresses on slot #{slot}...")
 
     %{state | activity: {:recording, slot}}
+  end
+
+  defp handle_keycode_and_action(
+         %{} = state,
+         {
+           %KeycodeBehavior{action: :replay, identifier: _slot},
+           :pressed
+         }
+       ) do
+    # we only do something when the replay key is released
+    state
+  end
+
+  defp handle_keycode_and_action(
+         %{device: device} = state,
+         {
+           %KeycodeBehavior{action: :replay, identifier: slot},
+           :released
+         }
+       ) do
+
+    to_replay = @recordings.get_recordings(state, slot)
+
+    Logger.debug("Will now replay slot #{slot} recordings: #{inspect(to_replay)}")
+
+    @macros.send_macro_keys(device, to_replay)
+
+    # replaying recordings doesn't change the state
+    state
   end
 
   defp handle_keycode_and_action(

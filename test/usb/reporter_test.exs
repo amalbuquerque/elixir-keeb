@@ -1,10 +1,12 @@
 defmodule ElixirKeeb.Usb.ReporterTest do
   use ExUnit.Case
   alias ElixirKeeb.KeycodeBehavior
+  alias ElixirKeeb.Macros.Recordings
   import Mox
 
   @subject ElixirKeeb.Usb.Reporter
   @device "/dev/dummy"
+  @updated_input_report <<0, 1, 2, 3, 4, 5, 6, 7>>
   @empty_input_report <<0, 0, 0, 0, 0, 0, 0, 0>>
   @key_pressed [{:kc_00, :pressed}]
   @key_released [{:kc_00, :released}]
@@ -22,6 +24,10 @@ defmodule ElixirKeeb.Usb.ReporterTest do
   }
   @record_key %KeycodeBehavior{
     action: :record,
+    identifier: @slot
+  }
+  @replay_key %KeycodeBehavior{
+    action: :replay,
     identifier: @slot
   }
   @macro_keys [:kc_a, :kc_n, :kc_d, :kc_r, :kc_e]
@@ -50,11 +56,9 @@ defmodule ElixirKeeb.Usb.ReporterTest do
     end
 
     test "it updates the state as expected, for a regular keypress", %{reporter: reporter} do
-      updated_input_report = <<0, 1, 2, 3, 4, 5, 6, 7>>
+      expect(@report, :update_report, fn _input_report, {:kc_a, :pressed} -> @updated_input_report end)
 
-      expect(@report, :update_report, fn _input_report, {:kc_a, :pressed} -> updated_input_report end)
-
-      expect(@gadget, :raw_write, fn _device, ^updated_input_report -> :ok end)
+      expect(@gadget, :raw_write, fn _device, @updated_input_report -> :ok end)
 
       :ok = GenServer.cast(reporter, {:keys_pressed, @key_pressed})
 
@@ -67,7 +71,7 @@ defmodule ElixirKeeb.Usb.ReporterTest do
         layout: @layout
       } = GenServer.call(reporter, :state)
 
-      assert updated_input_report == input_report
+      assert @updated_input_report == input_report
     end
 
     test "it doesn't write to the device, if the input report doesn't change", %{reporter: reporter} do
@@ -240,6 +244,37 @@ defmodule ElixirKeeb.Usb.ReporterTest do
       } = GenServer.call(reporter, :state)
     end
 
+    test "when `:recording`, the recording slot is updated with new key presses", %{reporter: reporter} do
+      expect(@layout, :keycode, fn _kc_xy, _layer -> @record_key end)
+
+      :ok = GenServer.cast(reporter, {:keys_pressed, @key_released})
+
+      assert %{
+        input_report: @empty_input_report,
+        layer: 0,
+        previous_layer: 0,
+        activity: {:recording, @slot}
+      } = GenServer.call(reporter, :state)
+
+      expect(@layout, :keycode, fn _kc_xy, _layer -> :kc_a end)
+
+      expect(@report, :update_report, fn @empty_input_report, {:kc_a, :released} -> @updated_input_report end)
+
+      expect(@gadget, :raw_write, fn _device, @updated_input_report -> :ok end)
+
+      expect(@recordings, :maybe_record, fn state, {:kc_a, :released} = keycode_and_action -> Recordings.maybe_record(state, keycode_and_action) end)
+
+      :ok = GenServer.cast(reporter, {:keys_pressed, @key_released})
+
+      assert %{
+        input_report: @updated_input_report,
+        layer: 0,
+        previous_layer: 0,
+        activity: {:recording, @slot},
+        recordings: %{@slot => [{:kc_a, :released}]}
+      } = GenServer.call(reporter, :state)
+    end
+
     test "when a `record` key is released, the state activity changes to `:regular` if it was `:recording`", %{reporter: reporter} do
       expect(@layout, :keycode, 2, fn _kc_xy, _layer -> @record_key end)
 
@@ -255,6 +290,52 @@ defmodule ElixirKeeb.Usb.ReporterTest do
         previous_layer: 0,
         activity: {:recording, @slot}
       } = GenServer.call(reporter, :state)
+
+      :ok = GenServer.cast(reporter, {:keys_pressed, @key_released})
+
+      assert %{
+        input_report: @empty_input_report,
+        layer: 0,
+        previous_layer: 0,
+        activity: :regular
+      } = GenServer.call(reporter, :state)
+    end
+
+    test "when a `replay` key is pressed, nothing happens", %{reporter: reporter} do
+      expect(@layout, :keycode, fn _kc_xy, _layer -> @replay_key end)
+
+      expect(@report, :update_report, 0, fn _input_report, _keycode_and_action -> raise("Can't touch this!") end)
+
+      expect(@gadget, :raw_write, 0, fn _device, _input_report -> raise("Can't touch this!") end)
+
+      :ok = GenServer.cast(reporter, {:keys_pressed, @key_pressed})
+
+      assert %{
+        input_report: @empty_input_report,
+        layer: 0,
+        previous_layer: 0,
+        activity: :regular
+      } = GenServer.call(reporter, :state)
+    end
+  end
+
+  describe "Reporter GenServer with a recordings slot filled" do
+    setup :slot_1_filled
+
+    test "when a `replay` key is released, no input report is changed and the slot keys are replayed", %{reporter: reporter} do
+      expect(@layout, :keycode, fn _kc_xy, _layer -> @replay_key end)
+
+      expect(@report, :update_report, 0, fn _input_report, _keycode_and_action -> raise("Can't touch this!") end)
+
+      expect(@gadget, :raw_write, 0, fn _device, _input_report -> raise("Can't touch this!") end)
+
+      expect(@recordings, :get_recordings, fn _state, @slot ->
+        @macro_keys
+      end)
+
+      expect(@macros, :send_macro_keys, fn device, @macro_keys when is_pid(device) ->
+        @empty_input_report # it doesn't matter
+      end)
 
       :ok = GenServer.cast(reporter, {:keys_pressed, @key_released})
 
@@ -287,6 +368,21 @@ defmodule ElixirKeeb.Usb.ReporterTest do
     {:ok, reporter} = @subject.start_link(@device)
 
     Map.put(context, :reporter, reporter)
+  end
+
+  defp slot_1_filled(%{reporter: reporter} = context) do
+    new_state = reporter
+                |> GenServer.call(:state)
+                |> Map.put(:activity, :regular)
+
+    new_state = @macro_keys
+                |> Enum.reduce(new_state, fn macro_key, state ->
+                  Recordings.maybe_record(state, macro_key)
+                end)
+
+    :ok = GenServer.call(reporter, {:new_state, new_state})
+
+    context
   end
 
   def fake_macro_function(state) do
