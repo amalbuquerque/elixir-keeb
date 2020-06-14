@@ -15,12 +15,14 @@ This firmware supports:
 
 ## TODO
 
+- Special recording macro that stores the keypresses in a stack, useful to obtain input from the user;
 - Web dashboard highlights all keys that are pressed, not only the first one;
 - Metrics for GPIO read latency + GPIO to keypress latency;
 - Redefine layout without having to burn firmware again;
 - Bump Nerves versions;
 - Use Gitlab Actions for CI;
-- Tap to send a key press, keep pressed to activate a layer or send a modifier.
+- Tap to send a key press, keep pressed to activate a layer or send a modifier;
+- Chording (e.g. pressing simultaneously `u` and `i` sends a third key press, instead of `u` or `i`).
 
 ## Wishlist
 
@@ -30,25 +32,27 @@ This firmware supports:
 
 ## Build steps
 
-This will upload the firmware via SSH:
+This will upload the firmware via SSH (check your keyboard IP on your router):
 
 1. `export MIX_ENV=prod`
 2. `export MIX_TARGET=rpi0_hid`
 3. `export NERVES_NETWORK_PSK=<password>`
 4. `export NERVES_NETWORK_SSID=<ssid>`
 5. `mix firmware`
-6. `./upload.sh 10.0.0.109 /home/andre/projs/personal/elixir_keeb/_build/rpi0_hid_prod/nerves/images/elixir_keeb.fw`
+6. `./upload.sh <keeb IP> /home/andre/projs/personal/elixir_keeb/_build/rpi0_hid_prod/nerves/images/elixir_keeb.fw`
 
 ## Debugging
 
-Connect via SSH with `ssh 10.0.0.109`.
+Connect via SSH with `ssh <keeb IP>`.
+
+You can check the web dashboard on `<keeb IP>:4000`
 
 If it borked the SSH connection, insert the micro SD card on the PC and burn the firmware to it:
 
 1. `export MIX_ENV=dev`
 2. `export MIX_TARGET=rpi0_hid`
-3. `export NERVES_NETWORK_PSK=<password>`
-4. `export NERVES_NETWORK_SSID=<ssid>`
+3. `export NERVES_NETWORK_SSID=<ssid>`
+4. `export NERVES_NETWORK_PSK=<password>`
 5. `mix firmware.burn`
 
 ## Targets
