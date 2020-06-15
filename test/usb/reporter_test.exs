@@ -1,7 +1,6 @@
 defmodule ElixirKeeb.Usb.ReporterTest do
   use ExUnit.Case
-  alias ElixirKeeb.KeycodeBehavior
-  alias ElixirKeeb.Structs.ReporterState
+  alias ElixirKeeb.Structs.{KeycodeBehavior, ReporterState}
   alias ElixirKeeb.Macros.Recordings
   import Mox
 

@@ -3,10 +3,10 @@ defmodule ElixirKeeb.Layout do
   """
 
   require Logger
+  alias ElixirKeeb.Structs.KeycodeBehavior
   alias ElixirKeeb.{
     Utils,
-    Macros,
-    KeycodeBehavior
+    Macros
   }
   import ElixirKeeb.Usb.Keycodes, only: [transparent?: 1]
 

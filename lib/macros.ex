@@ -1,5 +1,5 @@
 defmodule ElixirKeeb.Macros do
-  alias ElixirKeeb.KeycodeBehavior
+  alias ElixirKeeb.Structs.KeycodeBehavior
   alias ElixirKeeb.Usb.{Report, Gadget}
   import ElixirKeeb.Usb.Keycodes,
     only: [is_normal?: 1, normal?: 1, is_modifier?: 1, modifier?: 1]

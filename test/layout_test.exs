@@ -1,7 +1,8 @@
 defmodule ElixirKeeb.LayoutTest do
   use ExUnit.Case
   alias ElixirKeeb.Usb.Keycodes
-  alias ElixirKeeb.{Utils, KeycodeBehavior}
+  alias ElixirKeeb.Utils
+  alias ElixirKeeb.Structs.KeycodeBehavior
 
   @subject TestModule.First.Layout
   @matrix TestModule.First.Matrix

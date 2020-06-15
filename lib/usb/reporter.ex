@@ -1,8 +1,8 @@
 defmodule ElixirKeeb.Usb.Reporter do
   use GenServer
   require Logger
-  alias ElixirKeeb.{Utils, KeycodeBehavior}
-  alias ElixirKeeb.Structs.ReporterState
+  alias ElixirKeeb.Utils
+  alias ElixirKeeb.Structs.{KeycodeBehavior, ReporterState}
 
   @gadget Application.get_env(:elixir_keeb, :modules)[:gadget]
   @report Application.get_env(:elixir_keeb, :modules)[:report]
