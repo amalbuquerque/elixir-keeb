@@ -1,4 +1,5 @@
 defmodule ElixirKeeb.Macros.Recordings do
+  alias ElixirKeeb.Structs.ReporterState
   @type state :: map()
   @type keycode :: atom()
   @type action :: atom()
@@ -8,10 +9,10 @@ defmodule ElixirKeeb.Macros.Recordings do
   @callback maybe_record(state, keycode_and_action) :: state
   @callback get_recordings(state, slot) :: list(keycode_and_action)
 
-  def maybe_record(%{activity: :regular} = state, _keycode_and_action),
+  def maybe_record(%ReporterState{activity: :regular} = state, _keycode_and_action),
     do: state
 
-  def maybe_record(%{activity: {:recording, slot}} = state, keycode_and_action) do
+  def maybe_record(%ReporterState{activity: {:recording, slot}} = state, keycode_and_action) do
     recordings = Map.get(state, :recordings, %{})
 
     recordings = update_slot(recordings, slot, keycode_and_action)

@@ -2,6 +2,7 @@ defmodule ElixirKeeb.Usb.Reporter do
   use GenServer
   require Logger
   alias ElixirKeeb.{Utils, KeycodeBehavior}
+  alias ElixirKeeb.Structs.ReporterState
 
   @gadget Application.get_env(:elixir_keeb, :modules)[:gadget]
   @report Application.get_env(:elixir_keeb, :modules)[:report]
@@ -26,14 +27,7 @@ defmodule ElixirKeeb.Usb.Reporter do
 
     {
       :ok,
-      %{
-        device: device_pid,
-        layout: layout_module,
-        input_report: @report.empty_report(),
-        previous_layer: 0,
-        layer: 0,
-        activity: :regular,
-      }
+      ReporterState.initial_state(device_pid, layout_module)
     }
   end
 
@@ -56,12 +50,9 @@ defmodule ElixirKeeb.Usb.Reporter do
   @impl true
   def handle_cast(
         {:keys_pressed, kc_xy_keys},
-        %{
+        %ReporterState{
           device: device,
-          input_report: previous_report,
-          layout: _layout_module,
-          previous_layer: _previous_layer,
-          layer: _layer
+          input_report: previous_report
         } = state
       ) do
     Logger.debug(
@@ -70,7 +61,7 @@ defmodule ElixirKeeb.Usb.Reporter do
 
     new_state = update_input_report(kc_xy_keys, state)
 
-    %{input_report: new_input_report} = new_state
+    %ReporterState{input_report: new_input_report} = new_state
 
     case new_input_report do
       ^previous_report ->
@@ -91,9 +82,9 @@ defmodule ElixirKeeb.Usb.Reporter do
 
   def update_input_report(
         kc_xy_keys,
-        %{layout: layout_module} = state
+        %ReporterState{layout: layout_module} = state
       ) do
-    Enum.reduce(kc_xy_keys, state, fn {kc_xy, action}, %{layer: current_layer} = state ->
+    Enum.reduce(kc_xy_keys, state, fn {kc_xy, action}, %ReporterState{layer: current_layer} = state ->
       mapped_keycode = layout_module.keycode(kc_xy, current_layer)
 
       Logger.debug("Will now communicate to dashboard #{inspect({mapped_keycode, action})}...")
@@ -105,27 +96,27 @@ defmodule ElixirKeeb.Usb.Reporter do
   end
 
   defp handle_keycode_and_action(
-         %{layer: current_layer} = state,
+         %ReporterState{layer: current_layer} = state,
          {
            %KeycodeBehavior{action: :toggle, layer: layer_to_toggle},
            :pressed
          }
        ) do
-    %{state | previous_layer: current_layer, layer: layer_to_toggle}
+    %ReporterState{state | previous_layer: current_layer, layer: layer_to_toggle}
   end
 
   defp handle_keycode_and_action(
-         %{previous_layer: previous_layer} = state,
+         %ReporterState{previous_layer: previous_layer} = state,
          {
            %KeycodeBehavior{action: :toggle, layer: layer_to_toggle},
            :released
          }
        ) do
-    %{state | previous_layer: layer_to_toggle, layer: previous_layer}
+    %ReporterState{state | previous_layer: layer_to_toggle, layer: previous_layer}
   end
 
   defp handle_keycode_and_action(
-         %{} = state,
+         %ReporterState{} = state,
          {
            %KeycodeBehavior{action: :macro},
            :pressed
@@ -136,7 +127,7 @@ defmodule ElixirKeeb.Usb.Reporter do
   end
 
   defp handle_keycode_and_action(
-         %{device: device} = state,
+         %ReporterState{device: device} = state,
          {
            %KeycodeBehavior{action: :macro, function: macro_function},
            :released
@@ -153,7 +144,7 @@ defmodule ElixirKeeb.Usb.Reporter do
   end
 
   defp handle_keycode_and_action(
-         %{} = state,
+         %ReporterState{} = state,
          {
            %KeycodeBehavior{action: :record, identifier: _slot},
            :pressed
@@ -164,7 +155,7 @@ defmodule ElixirKeeb.Usb.Reporter do
   end
 
   defp handle_keycode_and_action(
-         %{activity: {:recording, slot}} = state,
+         %ReporterState{activity: {:recording, slot}} = state,
          {
            %KeycodeBehavior{action: :record, identifier: _},
            :released
@@ -173,11 +164,11 @@ defmodule ElixirKeeb.Usb.Reporter do
 
     Logger.debug("Just recorded keypresses in slot #{slot}...")
 
-    %{state | activity: :regular}
+    %ReporterState{state | activity: :regular}
   end
 
   defp handle_keycode_and_action(
-         %{activity: :regular} = state,
+         %ReporterState{activity: :regular} = state,
          {
            %KeycodeBehavior{action: :record, identifier: slot},
            :released
@@ -186,11 +177,11 @@ defmodule ElixirKeeb.Usb.Reporter do
 
     Logger.debug("Will now record keypresses on slot #{slot}...")
 
-    %{state | activity: {:recording, slot}}
+    %ReporterState{state | activity: {:recording, slot}}
   end
 
   defp handle_keycode_and_action(
-         %{} = state,
+         %ReporterState{} = state,
          {
            %KeycodeBehavior{action: :replay, identifier: _slot},
            :pressed
@@ -201,7 +192,7 @@ defmodule ElixirKeeb.Usb.Reporter do
   end
 
   defp handle_keycode_and_action(
-         %{device: device} = state,
+         %ReporterState{device: device} = state,
          {
            %KeycodeBehavior{action: :replay, identifier: slot},
            :released
@@ -219,7 +210,7 @@ defmodule ElixirKeeb.Usb.Reporter do
   end
 
   defp handle_keycode_and_action(
-         %{} = state,
+         %ReporterState{} = state,
          {
            %KeycodeBehavior{action: :lock, layer: _layer_to_toggle},
            :pressed
@@ -230,7 +221,7 @@ defmodule ElixirKeeb.Usb.Reporter do
   end
 
   defp handle_keycode_and_action(
-         %{previous_layer: previous_layer, layer: current_layer} = state,
+         %ReporterState{previous_layer: previous_layer, layer: current_layer} = state,
          {
            %KeycodeBehavior{action: :lock, layer: layer_to_lock},
            :released
@@ -239,16 +230,16 @@ defmodule ElixirKeeb.Usb.Reporter do
     case current_layer do
       ^layer_to_lock ->
         # layer_to_lock was already activated, so we unlock it
-        %{state | previous_layer: current_layer, layer: previous_layer}
+        %ReporterState{state | previous_layer: current_layer, layer: previous_layer}
 
       _ ->
         # layer_to_lock wasn't activated, so we lock it
-        %{state | previous_layer: current_layer, layer: layer_to_lock}
+        %ReporterState{state | previous_layer: current_layer, layer: layer_to_lock}
     end
   end
 
   defp handle_keycode_and_action(
-         %{input_report: previous_report} = state,
+         %ReporterState{input_report: previous_report} = state,
          {_mapped_keycode, _keycode_action} = keycode_and_action
        ) do
     input_report = @report.update_report(previous_report, keycode_and_action)

@@ -1,5 +1,5 @@
 defmodule ElixirKeeb.Macros.RecordingsTest do
-  alias ElixirKeeb.Usb.Report
+  alias ElixirKeeb.Structs.ReporterState
 
   use ExUnit.Case
 
@@ -47,21 +47,13 @@ defmodule ElixirKeeb.Macros.RecordingsTest do
     end
   end
 
-  defp regular_state do
-    %{
-      device: self(),
-      layout: Fake.Layout.Module,
-      input_report: Report.empty_report(),
-      previous_layer: 0,
-      layer: 0,
-      activity: :regular,
-    }
-  end
+  defp regular_state,
+    do: ReporterState.initial_state(self(), Fake.Layout.Module)
 
   defp recording_state(slot, existing_recordings \\ nil)
 
   defp recording_state(slot, nil) do
-    %{
+    %ReporterState{
       regular_state() |
       activity: {:recording, slot}
     }
@@ -70,7 +62,7 @@ defmodule ElixirKeeb.Macros.RecordingsTest do
   defp recording_state(slot, existing_recordings) do
     existing_recordings = Map.put(%{}, slot, existing_recordings)
 
-    %{
+    %ReporterState{
       regular_state() |
       activity: {:recording, slot},
     }

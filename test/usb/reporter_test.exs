@@ -1,6 +1,7 @@
 defmodule ElixirKeeb.Usb.ReporterTest do
   use ExUnit.Case
   alias ElixirKeeb.KeycodeBehavior
+  alias ElixirKeeb.Structs.ReporterState
   alias ElixirKeeb.Macros.Recordings
   import Mox
 
@@ -43,7 +44,7 @@ defmodule ElixirKeeb.Usb.ReporterTest do
 
   describe "Reporter GenServer" do
     test "it starts with the expected state", %{reporter: reporter} do
-      assert %{
+      assert %ReporterState{
         activity: :regular,
         device: device_pid,
         input_report: @empty_input_report,
@@ -62,7 +63,7 @@ defmodule ElixirKeeb.Usb.ReporterTest do
 
       :ok = GenServer.cast(reporter, {:keys_pressed, @key_pressed})
 
-      assert %{
+      assert %ReporterState{
         activity: :regular,
         device: _device_pid,
         input_report: input_report,
@@ -82,7 +83,7 @@ defmodule ElixirKeeb.Usb.ReporterTest do
 
       :ok = GenServer.cast(reporter, {:keys_pressed, @key_pressed})
 
-      assert %{
+      assert %ReporterState{
         activity: :regular,
         device: _device_pid,
         input_report: @empty_input_report,
@@ -101,7 +102,7 @@ defmodule ElixirKeeb.Usb.ReporterTest do
 
       :ok = GenServer.cast(reporter, {:keys_pressed, @key_pressed})
 
-      assert %{
+      assert %ReporterState{
         activity: :regular,
         device: _device_pid,
         input_report: @empty_input_report,
@@ -116,7 +117,7 @@ defmodule ElixirKeeb.Usb.ReporterTest do
 
       :ok = GenServer.cast(reporter, {:keys_pressed, @key_pressed})
 
-      assert %{
+      assert %ReporterState{
         layer: 1,
         previous_layer: 0,
         input_report: @empty_input_report
@@ -127,7 +128,7 @@ defmodule ElixirKeeb.Usb.ReporterTest do
 
       :ok = GenServer.cast(reporter, {:keys_pressed, @key_released})
 
-      assert %{
+      assert %ReporterState{
         layer: 0,
         previous_layer: 1,
         input_report: @empty_input_report
@@ -143,7 +144,7 @@ defmodule ElixirKeeb.Usb.ReporterTest do
 
       :ok = GenServer.cast(reporter, {:keys_pressed, @key_pressed})
 
-      assert %{
+      assert %ReporterState{
         input_report: @empty_input_report,
         layer: 0,
         previous_layer: 0
@@ -155,7 +156,7 @@ defmodule ElixirKeeb.Usb.ReporterTest do
 
       :ok = GenServer.cast(reporter, {:keys_pressed, @key_pressed})
 
-      assert %{
+      assert %ReporterState{
         layer: 0,
         previous_layer: 0,
         input_report: @empty_input_report
@@ -166,7 +167,7 @@ defmodule ElixirKeeb.Usb.ReporterTest do
 
       :ok = GenServer.cast(reporter, {:keys_pressed, @key_released})
 
-      assert %{
+      assert %ReporterState{
         layer: 1,
         previous_layer: 0,
         input_report: @empty_input_report
@@ -182,7 +183,7 @@ defmodule ElixirKeeb.Usb.ReporterTest do
 
       :ok = GenServer.cast(reporter, {:keys_pressed, @key_pressed})
 
-      assert %{
+      assert %ReporterState{
         input_report: @empty_input_report,
         layer: 0,
         previous_layer: 0
@@ -202,11 +203,10 @@ defmodule ElixirKeeb.Usb.ReporterTest do
 
       :ok = GenServer.cast(reporter, {:keys_pressed, @key_released})
 
-      assert %{
+      assert %ReporterState{
         input_report: @empty_input_report,
         layer: 0,
-        previous_layer: 0,
-        updated_by: :fake_macro_function
+        previous_layer: :updated_by_fake_macro_function
       } = GenServer.call(reporter, :state)
     end
 
@@ -219,7 +219,7 @@ defmodule ElixirKeeb.Usb.ReporterTest do
 
       :ok = GenServer.cast(reporter, {:keys_pressed, @key_pressed})
 
-      assert %{
+      assert %ReporterState{
         input_report: @empty_input_report,
         layer: 0,
         previous_layer: 0,
@@ -236,7 +236,7 @@ defmodule ElixirKeeb.Usb.ReporterTest do
 
       :ok = GenServer.cast(reporter, {:keys_pressed, @key_released})
 
-      assert %{
+      assert %ReporterState{
         input_report: @empty_input_report,
         layer: 0,
         previous_layer: 0,
@@ -249,7 +249,7 @@ defmodule ElixirKeeb.Usb.ReporterTest do
 
       :ok = GenServer.cast(reporter, {:keys_pressed, @key_released})
 
-      assert %{
+      assert %ReporterState{
         input_report: @empty_input_report,
         layer: 0,
         previous_layer: 0,
@@ -266,7 +266,7 @@ defmodule ElixirKeeb.Usb.ReporterTest do
 
       :ok = GenServer.cast(reporter, {:keys_pressed, @key_released})
 
-      assert %{
+      assert %ReporterState{
         input_report: @updated_input_report,
         layer: 0,
         previous_layer: 0,
@@ -284,7 +284,7 @@ defmodule ElixirKeeb.Usb.ReporterTest do
 
       :ok = GenServer.cast(reporter, {:keys_pressed, @key_released})
 
-      assert %{
+      assert %ReporterState{
         input_report: @empty_input_report,
         layer: 0,
         previous_layer: 0,
@@ -293,7 +293,7 @@ defmodule ElixirKeeb.Usb.ReporterTest do
 
       :ok = GenServer.cast(reporter, {:keys_pressed, @key_released})
 
-      assert %{
+      assert %ReporterState{
         input_report: @empty_input_report,
         layer: 0,
         previous_layer: 0,
@@ -310,7 +310,7 @@ defmodule ElixirKeeb.Usb.ReporterTest do
 
       :ok = GenServer.cast(reporter, {:keys_pressed, @key_pressed})
 
-      assert %{
+      assert %ReporterState{
         input_report: @empty_input_report,
         layer: 0,
         previous_layer: 0,
@@ -339,7 +339,7 @@ defmodule ElixirKeeb.Usb.ReporterTest do
 
       :ok = GenServer.cast(reporter, {:keys_pressed, @key_released})
 
-      assert %{
+      assert %ReporterState{
         input_report: @empty_input_report,
         layer: 0,
         previous_layer: 0,
@@ -386,7 +386,7 @@ defmodule ElixirKeeb.Usb.ReporterTest do
   end
 
   def fake_macro_function(state) do
-    new_state = Map.put(state, :updated_by, :fake_macro_function)
+    new_state = %ReporterState{state | previous_layer: :updated_by_fake_macro_function}
 
     {@macro_keys, new_state}
   end
