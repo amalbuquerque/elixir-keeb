@@ -34,33 +34,36 @@ defmodule ElixirKeeb.Gpio.Listener do
         line_ports,
         column_ports,
         reporter,
-        listener_wait_ms)
+        listener_wait_ms
+      )
     }
   end
 
   @impl true
-  def handle_cast(:scan_matrix,
-    %ListenerState{
-      line_ports: line_ports,
-      column_ports: column_ports,
-      reporter: reporter,
-      listener_wait_ms: listener_wait_ms,
-      current_matrix: current_matrix
-    } = state) do
-
+  def handle_cast(
+        :scan_matrix,
+        %ListenerState{
+          line_ports: line_ports,
+          column_ports: column_ports,
+          reporter: reporter,
+          listener_wait_ms: listener_wait_ms,
+          current_matrix: current_matrix
+        } = state
+      ) do
     new_matrix = Gpio.scan_matrix(line_ports, column_ports, listener_wait_ms)
 
-    new_state = case Gpio.diff_matrices(current_matrix, new_matrix) do
-      [] ->
-        state
+    new_state =
+      case Gpio.diff_matrices(current_matrix, new_matrix) do
+        [] ->
+          state
 
-      keys_pressed ->
-        Logger.debug(inspect(keys_pressed), label: "Listener detected keys pressed")
+        keys_pressed ->
+          Logger.debug(inspect(keys_pressed), label: "Listener detected keys pressed")
 
-        GenServer.cast(reporter, {:keys_pressed, keys_pressed})
+          GenServer.cast(reporter, {:keys_pressed, keys_pressed})
 
-        %ListenerState{state | current_matrix: new_matrix}
-    end
+          %ListenerState{state | current_matrix: new_matrix}
+      end
 
     GenServer.cast(self(), :scan_matrix)
 
