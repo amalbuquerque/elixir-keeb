@@ -2,6 +2,7 @@ defmodule ElixirKeeb.Gpio.Listener do
   use GenServer
   require Logger
   alias ElixirKeeb.{Utils, Gpio}
+  alias ElixirKeeb.Structs.ListenerState
 
   @default_listener_wait_ms 10
 
@@ -29,19 +30,17 @@ defmodule ElixirKeeb.Gpio.Listener do
 
     {
       :ok,
-      %{
-        line_ports: line_ports,
-        column_ports: column_ports,
-        reporter: reporter,
-        listener_wait_ms: listener_wait_ms,
-        current_matrix: Gpio.initial_matrix(line_pins, column_pins)
-      }
+      ListenerState.initial_state(
+        line_ports,
+        column_ports,
+        reporter,
+        listener_wait_ms)
     }
   end
 
   @impl true
   def handle_cast(:scan_matrix,
-    %{
+    %ListenerState{
       line_ports: line_ports,
       column_ports: column_ports,
       reporter: reporter,
@@ -60,7 +59,7 @@ defmodule ElixirKeeb.Gpio.Listener do
 
         GenServer.cast(reporter, {:keys_pressed, keys_pressed})
 
-        %{state | current_matrix: new_matrix}
+        %ListenerState{state | current_matrix: new_matrix}
     end
 
     GenServer.cast(self(), :scan_matrix)

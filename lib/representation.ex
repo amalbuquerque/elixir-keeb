@@ -1,4 +1,6 @@
 defmodule ElixirKeeb.Representation do
+  alias ElixirKeeb.Structs.KeycodeBehavior
+
   @moduledoc """
   This module exists to get a string representation that
   can be used by the `simple_keyboard` Javascript library
@@ -66,14 +68,14 @@ end
     to_string(keycode) |> String.replace("kc_", "")
   end
 
-  def string_representation(%ElixirKeeb.KeycodeBehavior{
+  def string_representation(%KeycodeBehavior{
     action: action,
     layer: layer
   }) when action in [:toggle, :lock] do
     "{layer_#{layer}}"
   end
 
-  def string_representation(%ElixirKeeb.KeycodeBehavior{
+  def string_representation(%KeycodeBehavior{
     action: :macro,
     identifier: macro_id,
   }) do
