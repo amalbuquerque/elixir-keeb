@@ -1,6 +1,7 @@
 defmodule ElixirKeeb.Gpio do
   alias Circuits.GPIO, as: CircuitsGPIO
   alias ElixirKeeb.Utils
+  alias ElixirKeeb.Structs.KeyChange
 
   require Logger
 
@@ -87,8 +88,12 @@ defmodule ElixirKeeb.Gpio do
         )
 
       {line_idx, col_idx, diff} ->
+        key_change =
+          Utils.kc(line_idx, col_idx)
+          |> KeyChange.new(diff)
+
         [
-          {Utils.kc(line_idx, col_idx), diff}
+          key_change
           | diff_lines(
               rest_current_line,
               rest_new_line,

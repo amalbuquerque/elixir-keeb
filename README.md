@@ -15,7 +15,6 @@ This firmware supports:
 
 ## TODO
 
-- Keypress have a structure;
 - Special recording macro that stores the keypresses in a stack, useful to obtain input from the user;
 - Web dashboard highlights all keys that are pressed, not only the first one;
 - Metrics for GPIO read latency + GPIO to keypress latency;

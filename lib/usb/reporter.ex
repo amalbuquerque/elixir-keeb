@@ -2,7 +2,11 @@ defmodule ElixirKeeb.Usb.Reporter do
   use GenServer
   require Logger
   alias ElixirKeeb.Utils
-  alias ElixirKeeb.Structs.{KeycodeBehavior, ReporterState}
+  alias ElixirKeeb.Structs.{
+    KeycodeBehavior,
+    ReporterState,
+    KeyChange
+  }
 
   @gadget Application.get_env(:elixir_keeb, :modules)[:gadget]
   @report Application.get_env(:elixir_keeb, :modules)[:report]
@@ -42,14 +46,14 @@ defmodule ElixirKeeb.Usb.Reporter do
   @impl true
   def handle_call({:new_state, new_state}, _from, state) do
     Logger.debug(
-      "Setting current state as: #{inspect(new_state)}")
+      "Previous state is: #{inspect(state)}\nSetting current state as: #{inspect(new_state)}")
 
     {:reply, :ok, new_state}
   end
 
   @impl true
   def handle_cast(
-        {:keys_pressed, kc_xy_keys},
+        {:keys_pressed, [%KeyChange{} | _rest] = kc_xy_keys},
         %ReporterState{
           device: device,
           input_report: previous_report
@@ -84,7 +88,13 @@ defmodule ElixirKeeb.Usb.Reporter do
         kc_xy_keys,
         %ReporterState{layout: layout_module} = state
       ) do
-    Enum.reduce(kc_xy_keys, state, fn {kc_xy, action}, %ReporterState{layer: current_layer} = state ->
+    Enum.reduce(
+      kc_xy_keys,
+      state,
+      fn %KeyChange{
+        kc_xy: kc_xy,
+        state: action
+      }, %ReporterState{layer: current_layer} = state ->
       mapped_keycode = layout_module.keycode(kc_xy, current_layer)
 
       Logger.debug("Will now communicate to dashboard #{inspect({mapped_keycode, action})}...")

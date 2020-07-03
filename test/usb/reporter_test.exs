@@ -1,6 +1,10 @@
 defmodule ElixirKeeb.Usb.ReporterTest do
   use ExUnit.Case
-  alias ElixirKeeb.Structs.{KeycodeBehavior, ReporterState}
+  alias ElixirKeeb.Structs.{
+    KeycodeBehavior,
+    ReporterState,
+    KeyChange
+  }
   alias ElixirKeeb.Macros.Recordings
   import Mox
 
@@ -8,8 +12,8 @@ defmodule ElixirKeeb.Usb.ReporterTest do
   @device "/dev/dummy"
   @updated_input_report <<0, 1, 2, 3, 4, 5, 6, 7>>
   @empty_input_report <<0, 0, 0, 0, 0, 0, 0, 0>>
-  @key_pressed [{:kc_00, :pressed}]
-  @key_released [{:kc_00, :released}]
+  @key_pressed [KeyChange.new(:kc_00, :pressed)]
+  @key_released [KeyChange.new(:kc_00, :released)]
   @slot 1
   @toggle_key %KeycodeBehavior{
     action: :toggle, layer: 1
