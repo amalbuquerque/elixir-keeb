@@ -15,20 +15,20 @@ This firmware supports:
 
 ## TODO
 
+- Move modules to `lib/elixir_keeb`, instead of having them on the `lib` folder;
 - Special recording macro that stores the keypresses in a stack, useful to obtain input from the user;
-- Web dashboard highlights all keys that are pressed, not only the first one;
 - Metrics for GPIO read latency + GPIO to keypress latency;
 - Redefine layout without having to burn firmware again;
 - Bump Nerves versions;
 - Use Gitlab Actions for CI;
 - Tap to send a key press, keep pressed to activate a layer or send a modifier;
-- Chording (e.g. pressing simultaneously `u` and `i` sends a third key press, instead of `u` or `i`).
 
 ## Wishlist
 
 - Activate LEDs;
+- Handles host going to sleep and waking up;
 - Debug mode;
-- Handles host going to sleep and waking up.
+- Chording (e.g. pressing simultaneously `u` and `i` sends a third key press, instead of `u` or `i`);
 
 ## Build steps
 
