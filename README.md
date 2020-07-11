@@ -15,7 +15,6 @@ This firmware supports:
 
 ## TODO
 
-- Move modules to `lib/elixir_keeb`, instead of having them on the `lib` folder;
 - Special recording macro that stores the keypresses in a stack, useful to obtain input from the user;
 - Metrics for GPIO read latency + GPIO to keypress latency;
 - Redefine layout without having to burn firmware again;
