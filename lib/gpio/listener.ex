@@ -1,7 +1,7 @@
 defmodule ElixirKeeb.Gpio.Listener do
   use GenServer
   require Logger
-  alias ElixirKeeb.{Utils, Gpio}
+  alias ElixirKeeb.{Utils, Gpio, LatencyTracker}
   alias ElixirKeeb.Structs.ListenerState
 
   @default_listener_wait_ms 10
@@ -65,9 +65,19 @@ defmodule ElixirKeeb.Gpio.Listener do
           %ListenerState{state | current_matrix: new_matrix}
       end
 
+    new_state = measure_latency(new_state)
+
     GenServer.cast(self(), :scan_matrix)
 
     {:noreply, new_state}
+  end
+
+  defp measure_latency(%ListenerState{last_scan_at: last_scan_at} = state) do
+    now = Utils.monotonic_time()
+
+    :ok = LatencyTracker.append(:matrix_scan, now - last_scan_at)
+
+    %{state | last_scan_at: now}
   end
 
   defp get_config() do
