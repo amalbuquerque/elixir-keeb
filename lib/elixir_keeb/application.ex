@@ -8,10 +8,14 @@ defmodule ElixirKeeb.Application do
 
     opts = [strategy: :one_for_one, name: ElixirKeeb.Supervisor]
 
+    number_of_samples_kept = 50
+
     children =
       [
-        ElixirKeeb.LatencyTracker.child_spec(:matrix_scan, 50),
-        ElixirKeeb.LatencyTracker.child_spec(:matrix_to_usb, 50)
+        ElixirKeeb.LatencyTracker.child_spec(
+          :matrix_scan, number_of_samples_kept),
+        ElixirKeeb.LatencyTracker.child_spec(
+          :matrix_to_usb, number_of_samples_kept)
       ] ++ children(target(), device)
 
     Supervisor.start_link(children, opts)

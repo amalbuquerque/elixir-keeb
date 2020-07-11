@@ -103,6 +103,54 @@ config :elixir_keeb_ui, ElixirKeeb.UIWeb.Endpoint,
 
 config :phoenix, :json_library, Jason
 
+config :elixir_keeb_ui, :barcharts,
+  matrix_scan_latency: %{
+    # number of columns
+    categories: 50,
+    series: 1,
+    orientation: :vertical,
+    show_selected: "no",
+    title: "Matrix scan latency",
+    type: :stacked,
+    colour_scheme: "themed",
+
+    # custom options
+    plot_dimensions: {500, 400},
+    values_range: {0, 1000.0},
+    data_source: [
+      # MFA called to get the data list
+      mfa: {
+      ElixirKeeb.LatencyTracker,
+      :get,
+      [:matrix_scan]
+      },
+      wait_before_new_data_ms: 100
+    ]
+  },
+  matrix_to_usb_latency: %{
+    # number of columns
+    categories: 30,
+    series: 1,
+    orientation: :vertical,
+    show_selected: "no",
+    title: "Matrix to USB latency",
+    type: :stacked,
+    colour_scheme: "default",
+
+    # custom options
+    plot_dimensions: {500, 400},
+    values_range: {0, 1000.0},
+    data_source: [
+      # MFA called to get the data list
+      mfa: {
+      ElixirKeeb.LatencyTracker,
+      :get,
+      [:matrix_to_usb]
+      },
+      wait_before_new_data_ms: 100
+    ]
+  }
+
 if Mix.target() != :host do
   import_config "target.exs"
 end
