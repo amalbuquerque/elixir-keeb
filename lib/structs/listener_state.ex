@@ -1,12 +1,13 @@
 defmodule ElixirKeeb.Structs.ListenerState do
-  alias ElixirKeeb.Gpio
+  alias ElixirKeeb.{Gpio, Utils}
 
   @fields [
     :line_ports,
     :column_ports,
     :reporter,
     :listener_wait_ms,
-    :current_matrix
+    :current_matrix,
+    :last_scan_at
   ]
 
   @enforce_keys @fields
@@ -26,7 +27,8 @@ defmodule ElixirKeeb.Structs.ListenerState do
         column_ports: column_ports,
         reporter: reporter_module,
         listener_wait_ms: listener_wait_ms,
-        current_matrix: Gpio.initial_matrix(line_ports, column_ports)
+        current_matrix: Gpio.initial_matrix(line_ports, column_ports),
+        last_scan_at: Utils.monotonic_time()
       }
   end
 end

@@ -1,4 +1,6 @@
 defmodule ElixirKeeb.Structs.KeyChange do
+  alias ElixirKeeb.Utils
+
   import ElixirKeeb.PhysicalKeycodes,
     only: [kc_xy?: 1]
 
@@ -26,7 +28,7 @@ defmodule ElixirKeeb.Structs.KeyChange do
         %__MODULE__{
           kc_xy: kc_xy,
           state: state,
-          read_at: System.monotonic_time(:microsecond)
+          read_at: Utils.monotonic_time()
         }
   end
 end
