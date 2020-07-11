@@ -1,7 +1,7 @@
 defmodule ElixirKeeb.Usb.Reporter do
   use GenServer
   require Logger
-  alias ElixirKeeb.Utils
+  alias ElixirKeeb.{Utils, LatencyTracker}
   alias ElixirKeeb.Structs.{
     KeycodeBehavior,
     ReporterState,
@@ -94,8 +94,10 @@ defmodule ElixirKeeb.Usb.Reporter do
       fn %KeyChange{
         kc_xy: kc_xy,
         state: action
-      }, %ReporterState{layer: current_layer} = state ->
+      } = key_change, %ReporterState{layer: current_layer} = state ->
       mapped_keycode = layout_module.keycode(kc_xy, current_layer)
+
+      measure_latency(key_change)
 
       Logger.debug("Will now communicate to dashboard #{inspect({mapped_keycode, action})}...")
       @web_dashboard.communicate({mapped_keycode, action})
@@ -257,5 +259,11 @@ defmodule ElixirKeeb.Usb.Reporter do
     state
     |> @recordings.maybe_record(keycode_and_action)
     |> Map.put(:input_report, input_report)
+  end
+
+  defp measure_latency(%KeyChange{read_at: read_at}) do
+    now = Utils.monotonic_time()
+
+    :ok = LatencyTracker.append(:matrix_to_usb, now - read_at)
   end
 end
