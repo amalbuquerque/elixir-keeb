@@ -12,11 +12,11 @@ This firmware supports:
 - Record macros on the fly (e.g. `record to X` and `replay X` keys);
 - Web dashboard (shows keys currently pressed + log messages).
     * Macros have an identifier, passed to the dashboard through the `Representation` module;
+- Metrics for matrix scan read latency + GPIO matrix to USB latency;
 
 ## TODO
 
 - Special recording macro that stores the keypresses in a stack, useful to obtain input from the user;
-- Metrics for GPIO read latency + GPIO to keypress latency;
 - Redefine layout without having to burn firmware again;
 - Bump Nerves versions;
 - Use Gitlab Actions for CI;
@@ -30,6 +30,23 @@ This firmware supports:
 - Chording (e.g. pressing simultaneously `u` and `i` sends a third key press, instead of `u` or `i`);
 
 ## Build steps
+
+At the moment I'm using Erlang 22.0.7 and Elixir 1.9.4. Use them with `asdf` like this, just before compiling the firmware:
+
+```
+❯ asdf list erlang
+  21.3
+  22.0.7
+
+❯ asdf list elixir
+  1.10.3-otp-22
+  1.8.1-otp-21
+  1.9.4-otp-22
+
+❯ asdf local erlang 22.0.7
+
+❯ asdf local elixir 1.9.4-otp-22
+```
 
 This will upload the firmware via SSH (check your keyboard IP on your router):
 

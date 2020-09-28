@@ -98,15 +98,19 @@ config :elixir_keeb_ui, ElixirKeeb.UIWeb.Endpoint,
   debug_errors: true,
   secret_key_base: "lyJTNxBjfH08ODTgiErmNZZw4jsR9Cv8lNMtvUrYtJULavMR3envdyBF6l2SsrYv",
   render_errors: [view: ElixirKeeb.UIWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: ElixirKeeb.UI.PubSub, adapter: Phoenix.PubSub.PG2],
+  pubsub_server: ElixirKeeb.UI.PubSub,
   live_view: [signing_salt: "gqyVWgdq"]
 
 config :phoenix, :json_library, Jason
 
+config :elixir_keeb, :latency_tracker,
+  matrix_scan: [number_of_samples_kept: 30],
+  matrix_to_usb: [number_of_samples_kept: 30]
+
 config :elixir_keeb_ui, :barcharts,
   matrix_scan_latency: %{
     # number of columns
-    categories: 50,
+    categories: 30,
     series: 1,
     orientation: :vertical,
     show_selected: "no",
@@ -116,7 +120,7 @@ config :elixir_keeb_ui, :barcharts,
 
     # custom options
     plot_dimensions: {500, 400},
-    values_range: {0, 1000.0},
+    values_range: {0, 10000.0},
     data_source: [
       # MFA called to get the data list
       mfa: {
@@ -124,7 +128,7 @@ config :elixir_keeb_ui, :barcharts,
       :get,
       [:matrix_scan]
       },
-      wait_before_new_data_ms: 100
+      wait_before_new_data_ms: 500
     ]
   },
   matrix_to_usb_latency: %{
@@ -139,7 +143,7 @@ config :elixir_keeb_ui, :barcharts,
 
     # custom options
     plot_dimensions: {500, 400},
-    values_range: {0, 1000.0},
+    values_range: {0, 30000.0},
     data_source: [
       # MFA called to get the data list
       mfa: {
@@ -147,7 +151,7 @@ config :elixir_keeb_ui, :barcharts,
       :get,
       [:matrix_to_usb]
       },
-      wait_before_new_data_ms: 100
+      wait_before_new_data_ms: 500
     ]
   }
 
