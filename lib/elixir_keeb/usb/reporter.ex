@@ -147,7 +147,7 @@ defmodule ElixirKeeb.Usb.Reporter do
        ) do
     {macro_keys, new_state} = macro_function.(state)
 
-    Logger.debug("Macro key was just released. Keys: #{inspect(macro_keys)}, this was the new state from the macro #{inspect(new_state)} (not being used yet)")
+    Logger.debug("Macro key was just released. Keys: #{inspect(macro_keys)}, this was the new state from the macro #{inspect(new_state)}")
 
     @macros.send_macro_keys(device, macro_keys)
 
