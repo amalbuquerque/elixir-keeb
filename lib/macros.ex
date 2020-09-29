@@ -1,8 +1,9 @@
 defmodule ElixirKeeb.Macros do
   alias ElixirKeeb.Structs.KeycodeBehavior
   alias ElixirKeeb.Usb.{Report, Gadget}
+  alias ElixirKeeb.Usb.Keycodes
   import ElixirKeeb.Usb.Keycodes,
-    only: [is_normal?: 1, normal?: 1, is_modifier?: 1, modifier?: 1]
+    only: [is_shifted?: 1, shifted?: 1, is_normal?: 1, normal?: 1, is_modifier?: 1, modifier?: 1]
   require Logger
 
   @type input_report :: bitstring()
@@ -10,7 +11,11 @@ defmodule ElixirKeeb.Macros do
   @type keys :: list()
   @callback send_macro_keys(device, keys) :: input_report
 
-  @macro_sleep_between_key_behavior_ms 10
+  @macro_sleep_between_key_behavior_ms 0
+
+  def send_macro_keys(device, macro_keys) when is_binary(macro_keys) do
+    send_macro_keys(device, String.graphemes(macro_keys))
+  end
 
   def send_macro_keys(device, macro_keys) do
     # reset the input report
@@ -88,6 +93,22 @@ defmodule ElixirKeeb.Macros do
         identifier: unquote(slot)
       }
     end
+  end
+
+  def convert_to_keycode(key)
+    when is_binary(key) and shifted?(key) do
+      # we need an extra convert_to_keycode
+      # since the single keys need to also be expanded
+      # e.g. :kc_a -> {:kc_a, :pressed}, {:kc_a, :released}
+      key
+      |> Keycodes.value()
+      |> case do
+        values when is_list(values) ->
+          Enum.map(values, &convert_to_keycode/1)
+        value when is_atom(value) ->
+          convert_to_keycode(value)
+      end
+      |> List.flatten()
   end
 
   def convert_to_keycode(keycode) when is_binary(keycode) do

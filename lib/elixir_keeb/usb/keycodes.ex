@@ -174,61 +174,135 @@ defmodule ElixirKeeb.Usb.Keycodes do
     :kc_exsel
     ]
 
-    @normal @normal_keycodes |> Utils.zip_with_index(0x00)
-                             |> Enum.into(%{})
+  @shift_mapping %{
+    "A" => [{:kc_lshift, :pressed}, :kc_a, {:kc_lshift, :released}],
+    "B" => [{:kc_lshift, :pressed}, :kc_b, {:kc_lshift, :released}],
+    "C" => [{:kc_lshift, :pressed}, :kc_c, {:kc_lshift, :released}],
+    "D" => [{:kc_lshift, :pressed}, :kc_d, {:kc_lshift, :released}],
+    "E" => [{:kc_lshift, :pressed}, :kc_e, {:kc_lshift, :released}],
+    "F" => [{:kc_lshift, :pressed}, :kc_f, {:kc_lshift, :released}],
+    "G" => [{:kc_lshift, :pressed}, :kc_g, {:kc_lshift, :released}],
+    "H" => [{:kc_lshift, :pressed}, :kc_h, {:kc_lshift, :released}],
+    "I" => [{:kc_lshift, :pressed}, :kc_i, {:kc_lshift, :released}],
+    "J" => [{:kc_lshift, :pressed}, :kc_j, {:kc_lshift, :released}],
+    "K" => [{:kc_lshift, :pressed}, :kc_k, {:kc_lshift, :released}],
+    "L" => [{:kc_lshift, :pressed}, :kc_l, {:kc_lshift, :released}],
+    "M" => [{:kc_lshift, :pressed}, :kc_m, {:kc_lshift, :released}],
+    "N" => [{:kc_lshift, :pressed}, :kc_n, {:kc_lshift, :released}],
+    "O" => [{:kc_lshift, :pressed}, :kc_o, {:kc_lshift, :released}],
+    "P" => [{:kc_lshift, :pressed}, :kc_p, {:kc_lshift, :released}],
+    "Q" => [{:kc_lshift, :pressed}, :kc_q, {:kc_lshift, :released}],
+    "R" => [{:kc_lshift, :pressed}, :kc_r, {:kc_lshift, :released}],
+    "S" => [{:kc_lshift, :pressed}, :kc_s, {:kc_lshift, :released}],
+    "T" => [{:kc_lshift, :pressed}, :kc_t, {:kc_lshift, :released}],
+    "U" => [{:kc_lshift, :pressed}, :kc_u, {:kc_lshift, :released}],
+    "V" => [{:kc_lshift, :pressed}, :kc_v, {:kc_lshift, :released}],
+    "W" => [{:kc_lshift, :pressed}, :kc_w, {:kc_lshift, :released}],
+    "X" => [{:kc_lshift, :pressed}, :kc_x, {:kc_lshift, :released}],
+    "Y" => [{:kc_lshift, :pressed}, :kc_y, {:kc_lshift, :released}],
+    "Z" => [{:kc_lshift, :pressed}, :kc_z, {:kc_lshift, :released}],
+    "!" => [{:kc_lshift, :pressed}, :kc_1, {:kc_lshift, :released}],
+    "@" => [{:kc_lshift, :pressed}, :kc_2, {:kc_lshift, :released}],
+    "#" => [{:kc_lshift, :pressed}, :kc_3, {:kc_lshift, :released}],
+    "$" => [{:kc_lshift, :pressed}, :kc_4, {:kc_lshift, :released}],
+    "%" => [{:kc_lshift, :pressed}, :kc_5, {:kc_lshift, :released}],
+    "^" => [{:kc_lshift, :pressed}, :kc_6, {:kc_lshift, :released}],
+    "&" => [{:kc_lshift, :pressed}, :kc_7, {:kc_lshift, :released}],
+    "*" => [{:kc_lshift, :pressed}, :kc_8, {:kc_lshift, :released}],
+    "(" => [{:kc_lshift, :pressed}, :kc_9, {:kc_lshift, :released}],
+    ")" => [{:kc_lshift, :pressed}, :kc_0, {:kc_lshift, :released}],
+    "-" => :kc_minus,
+    "_" => [{:kc_lshift, :pressed}, :kc_minus, {:kc_lshift, :released}],
+    " " => :kc_space,
+    "=" => :kc_equal,
+    "+" => [{:kc_lshift, :pressed}, :kc_equal, {:kc_lshift, :released}],
+    "[" => :kc_lbracket,
+    "{" => [{:kc_lshift, :pressed}, :kc_lbracket, {:kc_lshift, :released}],
+    "]" => :kc_rbracket,
+    "}" => [{:kc_lshift, :pressed}, :kc_rbracket, {:kc_lshift, :released}],
+    "\\" => :kc_bslash,
+    "|" => [{:kc_lshift, :pressed}, :kc_bslash, {:kc_lshift, :released}],
+    ";" => :kc_scolon,
+    ":" => [{:kc_lshift, :pressed}, :kc_scolon, {:kc_lshift, :released}],
+    "'" => :kc_quote,
+    "\"" => [{:kc_lshift, :pressed}, :kc_quote, {:kc_lshift, :released}],
+    "`" => :kc_grave,
+    "~" => [{:kc_lshift, :pressed}, :kc_grave, {:kc_lshift, :released}],
+    "," => :kc_comma,
+    "<" => [{:kc_lshift, :pressed}, :kc_comma, {:kc_lshift, :released}],
+    "." => :kc_dot,
+    ">" => [{:kc_lshift, :pressed}, :kc_dot, {:kc_lshift, :released}],
+    "/" => :kc_slash,
+    "?" => [{:kc_lshift, :pressed}, :kc_slash, {:kc_lshift, :released}],
+  }
+
+  @shifted_keys Map.keys(@shift_mapping)
+
+  @normal @normal_keycodes |> Utils.zip_with_index(0x00)
+                           |> Enum.into(%{})
 
     # modifiers exist on the first report byte
     # LCTRL on the 1st bit, RGUI on the last bit
-    @modifier_keycodes [
-      :kc_lctrl,
-      :kc_lshift,
-      :kc_lalt,
-      :kc_lgui,
-      :kc_rctrl,
-      :kc_rshift,
-      :kc_ralt,
-      :kc_rgui
-    ]
+  @modifier_keycodes [
+    :kc_lctrl,
+    :kc_lshift,
+    :kc_lalt,
+    :kc_lgui,
+    :kc_rctrl,
+    :kc_rshift,
+    :kc_ralt,
+    :kc_rgui
+  ]
 
-    @modifiers Utils.zip_with_index(@modifier_keycodes, 0)
-    |> Enum.map(fn {keycode, position} -> {keycode, 1 <<< position} end)
-    |> Enum.into(%{})
+  @modifiers Utils.zip_with_index(@modifier_keycodes, 0)
+  |> Enum.map(fn {keycode, position} -> {keycode, 1 <<< position} end)
+  |> Enum.into(%{})
 
-    @keycodes Map.merge(@normal, @modifiers)
+  @keycodes Map.merge(@normal, @modifiers)
 
-    defguard normal?(keycode) when keycode in @normal_keycodes
+  defguard shifted?(keycode) when keycode in @shifted_keys
 
-    defguard modifier?(keycode) when keycode in @modifier_keycodes
+  defguard normal?(keycode) when keycode in @normal_keycodes
 
-    defguard transparent?(keycode) when keycode in @transparent_keycodes
+  defguard modifier?(keycode) when keycode in @modifier_keycodes
 
-    def is_normal?(keycode) when normal?(keycode), do: true
+  defguard transparent?(keycode) when keycode in @transparent_keycodes
 
-    def is_normal?(_keycode), do: false
+  def is_shifted?(keycode) when shifted?(keycode), do: true
 
-    def is_modifier?(keycode) when modifier?(keycode), do: true
+  def is_shifted?(_keycode), do: false
 
-    def is_modifier?(_keycode), do: false
+  def is_normal?(keycode) when normal?(keycode), do: true
 
-    def is_transparent?(keycode) when transparent?(keycode), do: true
+  def is_normal?(_keycode), do: false
 
-    def is_transparent?(_keycode), do: false
+  def is_modifier?(keycode) when modifier?(keycode), do: true
 
-    def value(keycode, state \\ :pressed)
+  def is_modifier?(_keycode), do: false
 
-    @doc """
-    When keycode is a modifier, we don't care about the state
-    because it will be "toggled" using a XOR with the modifier byte.
+  def is_transparent?(keycode) when transparent?(keycode), do: true
 
-    E.g. modifier_byte = 0000 0000 ; lctrl = 0000 0001
-      - toggle once: new modifier_byte = 0000 0001
-      - toggle twice: new modifier_byte = 0000 0000
-    """
-    def value(keycode, _state) when modifier?(keycode) do
-      Map.get(@keycodes, keycode)
-    end
+  def is_transparent?(_keycode), do: false
 
-    def value(keycode, :pressed), do: Map.get(@keycodes, keycode)
+  def value(keycode, state \\ :pressed)
 
-    def value(_keycode, :released), do: 0x00
+  @doc """
+  When keycode is a modifier, we don't care about the state
+  because it will be "toggled" using a XOR with the modifier byte.
+
+  E.g. modifier_byte = 0000 0000 ; lctrl = 0000 0001
+    - toggle once: new modifier_byte = 0000 0001
+    - toggle twice: new modifier_byte = 0000 0000
+  """
+  def value(keycode, _state) when modifier?(keycode) do
+    Map.get(@keycodes, keycode)
+  end
+
+  def value(shifted_key, _state) when shifted?(shifted_key) do
+    Map.get(@shift_mapping, shifted_key)
+  end
+
+  def value(keycode, :pressed), do: Map.get(@keycodes, keycode)
+
+  def value(_keycode, :released), do: 0x00
 end

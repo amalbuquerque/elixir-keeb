@@ -61,5 +61,36 @@ defmodule ElixirKeeb.MacrosTest do
         end
       end
     end
+
+    test "a *binary* shifted key is converted as expected" do
+      expectations = %{
+        "!" => shifted_expanded(:kc_1),
+        "#" => shifted_expanded(:kc_3),
+        "A" => shifted_expanded(:kc_a),
+        "<" => shifted_expanded(:kc_comma),
+        "[" => [{:kc_lbracket, :pressed}, {:kc_lbracket, :released}],
+        " " => [{:kc_space, :pressed}, {:kc_space, :released}]
+      }
+
+      for shifted_key <- Map.keys(expectations) do
+        assert expectations[shifted_key] == @subject.convert_to_keycode(shifted_key)
+      end
+    end
+
+    test "a *binary* shifted key is converted as a 'basic' atom-based keycode is" do
+      expectations = %{
+        "[" => :kc_lbracket,
+        " " => :kc_space,
+        "-" => :kc_minus
+      }
+
+      for shifted_key <- Map.keys(expectations) do
+        assert @subject.convert_to_keycode(shifted_key) == @subject.convert_to_keycode(expectations[shifted_key])
+      end
+    end
+  end
+
+  defp shifted_expanded(keycode) do
+    [{:kc_lshift, :pressed}, {keycode, :pressed}, {keycode, :released}, {:kc_lshift, :released}]
   end
 end
