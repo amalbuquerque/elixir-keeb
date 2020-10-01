@@ -2,7 +2,7 @@ defmodule ElixirKeeb.Utils do
   @kc_indexes "0123456789abcdefghijklmnopqrstuvwxyz"
 
   def monotonic_time do
-    System.monotonic_time(:microsecond)
+    System.monotonic_time(:millisecond)
   end
 
   def matrix_at(matrix, x, y) do
