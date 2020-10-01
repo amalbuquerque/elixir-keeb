@@ -119,8 +119,8 @@ config :elixir_keeb_ui, :barcharts,
     colour_scheme: "themed",
 
     # custom options
-    plot_dimensions: {500, 400},
-    values_range: {0, 10000.0},
+    plot_dimensions: {500, 300},
+    values_range: {0, 10.0},
     data_source: [
       # MFA called to get the data list
       mfa: {
@@ -142,8 +142,8 @@ config :elixir_keeb_ui, :barcharts,
     colour_scheme: "default",
 
     # custom options
-    plot_dimensions: {500, 400},
-    values_range: {0, 30000.0},
+    plot_dimensions: {500, 300},
+    values_range: {0, 40.0},
     data_source: [
       # MFA called to get the data list
       mfa: {
