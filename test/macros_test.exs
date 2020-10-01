@@ -20,17 +20,13 @@ defmodule ElixirKeeb.MacrosTest do
 
     test "a 'basic' atom-based keycode with press/release info associated raises an exception" do
       for state <- [:pressed, :released] do
-        assert_raise FunctionClauseError, fn ->
-          @subject.convert_to_keycode({:kc_a, state})
-        end
+        assert {:kc_a, state} == @subject.convert_to_keycode({:kc_a, state})
       end
     end
 
     test "a 'basic' string-based keycode with press/release info associated raises an exception" do
       for state <- [:pressed, :released] do
-        assert_raise RuntimeError, fn ->
-          @subject.convert_to_keycode({"a", state})
-        end
+        assert {:kc_a, state} == @subject.convert_to_keycode({"a", state})
       end
     end
 

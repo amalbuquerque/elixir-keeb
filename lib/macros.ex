@@ -3,7 +3,7 @@ defmodule ElixirKeeb.Macros do
   alias ElixirKeeb.Usb.{Report, Gadget}
   alias ElixirKeeb.Usb.Keycodes
   import ElixirKeeb.Usb.Keycodes,
-    only: [is_shifted?: 1, shifted?: 1, is_normal?: 1, normal?: 1, is_modifier?: 1, modifier?: 1]
+    only: [shifted?: 1, is_normal?: 1, normal?: 1, is_modifier?: 1, modifier?: 1]
   require Logger
 
   @type input_report :: bitstring()
@@ -127,18 +127,18 @@ defmodule ElixirKeeb.Macros do
     |> Enum.map(&{keycode, &1})
   end
 
-  def convert_to_keycode({modifier, state}) when is_binary(modifier) do
-    maybe_modifier = String.to_atom("kc_#{modifier}")
+  def convert_to_keycode({key, state}) when is_binary(key) do
+    maybe_key = String.to_atom("kc_#{key}")
 
-    case is_modifier?(maybe_modifier) do
+    case is_modifier?(maybe_key) or is_normal?(maybe_key) do
       true ->
-        convert_to_keycode({maybe_modifier, state})
+        convert_to_keycode({maybe_key, state})
       _ ->
-        raise("'#{modifier}' can't be translated to a proper keycode.")
+        raise("'#{key}' can't be translated to a proper keycode.")
     end
   end
 
-  def convert_to_keycode({modifier, state}) when modifier?(modifier) do
-    {modifier, state}
+  def convert_to_keycode({key, state}) when modifier?(key) or normal?(key) do
+    {key, state}
   end
 end

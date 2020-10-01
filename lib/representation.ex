@@ -81,4 +81,18 @@ end
   }) do
     "macro_#{macro_id}"
   end
+
+  def string_representation(%KeycodeBehavior{
+    action: :record,
+    identifier: recording_id,
+  }) do
+    "record_#{recording_id}"
+  end
+
+  def string_representation(%KeycodeBehavior{
+    action: :replay,
+    identifier: recording_id,
+  }) do
+    "replay_#{recording_id}"
+  end
 end
