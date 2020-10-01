@@ -47,23 +47,53 @@ defmodule ElixirKeeb.Macros.RecordingsTest do
     end
   end
 
+  describe "erase_slot/2" do
+    test "it doesn't bork with a regular state with no recordings" do
+      state = regular_state()
+
+      state = @subject.erase_slot(state, 0)
+
+      assert @subject.get_recordings(state, 0) == []
+    end
+
+    test "it erases an existing slot from a state" do
+      slot_1_recording = [@keycode_and_action, @keycode_and_action, @keycode_and_action]
+
+      state = recording_state(1, slot_1_recording)
+      state = recording_state(0, [@keycode_and_action], state)
+
+      state = @subject.erase_slot(state, 0)
+
+      assert @subject.get_recordings(state, 0) == []
+      assert @subject.get_recordings(state, 1) == slot_1_recording
+    end
+  end
+
   defp regular_state,
     do: ReporterState.initial_state(self(), Fake.Layout.Module)
 
-  defp recording_state(slot, existing_recordings \\ nil)
+  defp recording_state(slot, existing_recordings \\ nil, initial_state \\ nil)
 
-  defp recording_state(slot, nil) do
+  defp recording_state(slot, nil, nil) do
     %ReporterState{
       regular_state() |
       activity: {:recording, slot}
     }
   end
 
-  defp recording_state(slot, existing_recordings) do
-    existing_recordings = Map.put(%{}, slot, existing_recordings)
+  defp recording_state(slot, existing_recordings, initial_state) do
+    initial_state = case initial_state do
+      nil ->
+        regular_state()
+
+      state ->
+        state
+    end
+
+    existing_recordings = Map.put(initial_state.recordings, slot, existing_recordings)
 
     %ReporterState{
-      regular_state() |
+      initial_state |
       activity: {:recording, slot},
     }
     |> Map.put(:recordings, existing_recordings)

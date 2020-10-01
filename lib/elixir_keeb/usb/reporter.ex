@@ -187,7 +187,9 @@ defmodule ElixirKeeb.Usb.Reporter do
          }
        ) do
 
-    Logger.debug("Will now record keypresses on slot #{slot}...")
+    state = @recordings.erase_slot(state, slot)
+
+    Logger.debug("Will now record keypresses on slot #{slot}... (after emptying the sloto first)")
 
     %ReporterState{state | activity: {:recording, slot}}
   end
