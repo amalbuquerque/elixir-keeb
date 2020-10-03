@@ -46,6 +46,8 @@ defmodule ElixirKeeb.MixProject do
       {:shoehorn, "~> 0.6"},
       {:ring_logger, "~> 0.6"},
       {:toolshed, "~> 0.2"},
+      {:httpoison, "~> 1.7.0"},
+      {:jason, "~> 1.2.2"},
 
       # Dependencies for all targets except :host
       {:nerves_runtime, "~> 0.6", targets: @all_targets},
@@ -55,7 +57,7 @@ defmodule ElixirKeeb.MixProject do
 
       # Dependencies for specific targets
       {:nerves_system_rpi0, "~> 1.8", runtime: false, targets: :rpi0},
-      {:nerves_system_rpi0_hid, path: "../nerves_custom_rpi0", runtime: false, targets: :rpi0_hid},
+      {:nerves_system_rpi0_hid, path: "../nerves_custom_rpi0", runtime: false, targets: :rpi0_hid, nerves: [compile: true]},
       {:mix_test_watch, "~> 1.0.2", only: :test},
       {:mox, "~> 0.5.2", only: :test},
       {:elixir_keeb_ui, path: "../elixir_keeb_ui", targets: @all_targets},
