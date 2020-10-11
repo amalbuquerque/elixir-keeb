@@ -8,6 +8,7 @@ defmodule ElixirKeeb.Macros.Recordings do
 
   @callback maybe_record(state, keycode_and_action) :: state
   @callback get_recordings(state, slot) :: list(keycode_and_action)
+  @callback erase_slot(state, slot) :: state
 
   def maybe_record(%ReporterState{activity: :regular} = state, _keycode_and_action),
     do: state

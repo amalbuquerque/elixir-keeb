@@ -233,6 +233,8 @@ defmodule ElixirKeeb.Usb.ReporterTest do
     test "when a `record` key is released, the state activity changes to `:recording`", %{reporter: reporter} do
       expect(@layout, :keycode, fn _kc_xy, _layer -> @record_key end)
 
+      expect(@recordings, :erase_slot, fn state, @slot -> state end)
+
       expect(@report, :update_report, 0, fn _input_report, _keycode_and_action -> raise("Can't touch this!") end)
 
       expect(@gadget, :raw_write, 0, fn _device, _input_report -> raise("Can't touch this!") end)
@@ -249,6 +251,8 @@ defmodule ElixirKeeb.Usb.ReporterTest do
 
     test "when `:recording`, the recording slot is updated with new key presses", %{reporter: reporter} do
       expect(@layout, :keycode, fn _kc_xy, _layer -> @record_key end)
+
+      expect(@recordings, :erase_slot, fn state, @slot -> state end)
 
       :ok = GenServer.cast(reporter, {:keys_pressed, @key_released})
 
@@ -280,6 +284,8 @@ defmodule ElixirKeeb.Usb.ReporterTest do
 
     test "when a `record` key is released, the state activity changes to `:regular` if it was `:recording`", %{reporter: reporter} do
       expect(@layout, :keycode, 2, fn _kc_xy, _layer -> @record_key end)
+
+      expect(@recordings, :erase_slot, fn state, @slot -> state end)
 
       expect(@report, :update_report, 0, fn _input_report, _keycode_and_action -> raise("Can't touch this!") end)
 
