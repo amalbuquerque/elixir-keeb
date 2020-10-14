@@ -95,4 +95,14 @@ end
   }) do
     "replay_#{recording_id}"
   end
+
+  def string_representation(%KeycodeBehavior{
+    action: :tap_or_toggle,
+    tap_or_toggle: %{
+      tap: tap_key,
+      toggle: toggle_key
+    },
+  }) do
+    "tap_or_toggle_#{tap_key}_#{toggle_key}"
+  end
 end

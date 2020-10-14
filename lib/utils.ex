@@ -45,6 +45,9 @@ defmodule ElixirKeeb.Utils do
     String.to_atom("kc_#{line_kc_index}#{column_kc_index}")
   end
 
+  def cast_after(process, message, time, opts \\ []),
+    do: Process.send_after(process, {:"$gen_cast", message}, time, opts)
+
   defp index_to_kc_index(index)
        when is_integer(index) and index >= 0 and index <= 35 do
     String.at(@kc_indexes, index)

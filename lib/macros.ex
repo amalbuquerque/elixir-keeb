@@ -6,25 +6,36 @@ defmodule ElixirKeeb.Macros do
     only: [shifted?: 1, is_normal?: 1, normal?: 1, is_modifier?: 1, modifier?: 1]
   require Logger
 
-  @type input_report :: bitstring()
+  @type reset_input_report :: boolean()
+  @type input_report :: bitstring() | nil
   @type device :: pid()
   @type keys :: list()
   @callback send_macro_keys(device, keys) :: input_report
+  @callback send_macro_keys(device, keys, input_report) :: input_report
 
   @macro_sleep_between_key_behavior_ms 0
 
-  def send_macro_keys(device, macro_keys) when is_binary(macro_keys) do
-    send_macro_keys(device, String.graphemes(macro_keys))
+  def send_macro_keys(device, macro_keys, previous_input_report \\ nil)
+
+  def send_macro_keys(device, macro_keys, previous_input_report) when is_binary(macro_keys) do
+    send_macro_keys(device, String.graphemes(macro_keys), previous_input_report)
   end
 
-  def send_macro_keys(device, macro_keys) do
-    # reset the input report
-    Gadget.raw_write(device, nil)
+  def send_macro_keys(device, macro_keys, previous_input_report) do
+    initial_input_report = case previous_input_report do
+      nil ->
+        # reset the input report
+        Gadget.raw_write(device, nil)
+        Report.empty_report()
+
+      input_report ->
+        input_report
+    end
 
     macro_keys
     |> Enum.map(&convert_to_keycode/1)
     |> List.flatten()
-    |> Enum.reduce(Report.empty_report(), fn keycode_and_state, input_report ->
+    |> Enum.reduce(initial_input_report, fn keycode_and_state, input_report ->
       updated_input_report = Report.update_report(input_report, keycode_and_state)
 
       Logger.debug("Handling the macro step: #{inspect(keycode_and_state)}")
