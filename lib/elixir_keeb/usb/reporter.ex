@@ -11,6 +11,7 @@ defmodule ElixirKeeb.Usb.Reporter do
   @gadget Application.get_env(:elixir_keeb, :modules)[:gadget]
   @report Application.get_env(:elixir_keeb, :modules)[:report]
   @macros Application.get_env(:elixir_keeb, :modules)[:macros]
+  @tap_or_toggle Application.get_env(:elixir_keeb, :modules)[:tap_or_toggle]
   @recordings Application.get_env(:elixir_keeb, :modules)[:recordings]
   @web_dashboard Application.get_env(:elixir_keeb, :modules)[:web_dashboard]
 
@@ -84,8 +85,43 @@ defmodule ElixirKeeb.Usb.Reporter do
     {:noreply, new_state}
   end
 
+  @impl true
+  def handle_cast(
+        {:keycode_behaviors_pressed, [{%KeycodeBehavior{}, _action} | _rest] = keycode_behavior_keys},
+        %ReporterState{
+          device: device,
+          input_report: previous_report
+        } = state
+      ) do
+    Logger.debug(
+      "Received keycode behaviors: #{inspect(keycode_behavior_keys)}, previous_report: #{inspect(previous_report)}"
+    )
+
+    # TODO: Refactor this part, given its similarity with the
+    # handle_cast({:keys_pressed, ...}, ...) above
+    new_state = update_input_report(keycode_behavior_keys, state)
+
+    %ReporterState{input_report: new_input_report} = new_state
+
+    case new_input_report do
+      ^previous_report ->
+        Logger.debug("New input_report == previous input_report. Skipping writing to the device.")
+
+        :noop
+
+      _new_report ->
+        Logger.debug(
+          "New input_report != previous input_report. Writing #{inspect(new_input_report)} to device."
+        )
+
+        @gadget.raw_write(device, new_input_report)
+    end
+
+    {:noreply, new_state}
+  end
+
   def update_input_report(
-        kc_xy_keys,
+        [%KeyChange{} | _rest] = kc_xy_keys,
         %ReporterState{layout: layout_module} = state
       ) do
     Enum.reduce(
@@ -98,6 +134,24 @@ defmodule ElixirKeeb.Usb.Reporter do
       mapped_keycode = layout_module.keycode(kc_xy, current_layer)
 
       measure_latency(key_change)
+
+      Logger.debug("Will now communicate to dashboard #{inspect({mapped_keycode, action})}...")
+      @web_dashboard.communicate({mapped_keycode, action})
+      Logger.debug("Just communicated to dashboard #{inspect({mapped_keycode, action})}")
+
+      handle_keycode_and_action(state, {mapped_keycode, action})
+    end)
+  end
+
+  def update_input_report(
+        [{%KeycodeBehavior{}, _action} | _rest] = keycode_behavior_keys,
+        %ReporterState{} = state
+      ) do
+    Enum.reduce(
+      keycode_behavior_keys,
+      state,
+      fn {%KeycodeBehavior{} = mapped_keycode, action},
+         %ReporterState{} = state ->
 
       Logger.debug("Will now communicate to dashboard #{inspect({mapped_keycode, action})}...")
       @web_dashboard.communicate({mapped_keycode, action})
@@ -250,6 +304,16 @@ defmodule ElixirKeeb.Usb.Reporter do
         # layer_to_lock wasn't activated, so we lock it
         %ReporterState{state | previous_layer: current_layer, layer: layer_to_lock}
     end
+  end
+
+  defp handle_keycode_and_action(
+    %ReporterState{} = state,
+    {
+      %KeycodeBehavior{action: :tap_or_toggle},
+      _key_state
+    } = keycode_and_action
+  ) do
+    @tap_or_toggle.handle_tap_or_toggle(state, keycode_and_action)
   end
 
   defp handle_keycode_and_action(

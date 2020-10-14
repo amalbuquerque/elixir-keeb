@@ -241,8 +241,8 @@ defmodule ElixirKeeb.Usb.Keycodes do
   @normal @normal_keycodes |> Utils.zip_with_index(0x00)
                            |> Enum.into(%{})
 
-    # modifiers exist on the first report byte
-    # LCTRL on the 1st bit, RGUI on the last bit
+  # modifiers exist on the first report byte
+  # LCTRL on the 1st bit, RGUI on the last bit
   @modifier_keycodes [
     :kc_lctrl,
     :kc_lshift,

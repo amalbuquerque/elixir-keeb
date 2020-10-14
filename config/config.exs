@@ -12,6 +12,7 @@ config :elixir_keeb, :modules,
   report: ElixirKeeb.Usb.Report,
   macros: ElixirKeeb.Macros,
   recordings: ElixirKeeb.Macros.Recordings,
+  tap_or_toggle: ElixirKeeb.Advanced.TapOrToggle,
   web_dashboard: ElixirKeeb.Communication.WebDashboard
 
 config :elixir_keeb,

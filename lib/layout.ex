@@ -8,7 +8,7 @@ defmodule ElixirKeeb.Layout do
     Utils,
     Macros
   }
-  import ElixirKeeb.Usb.Keycodes, only: [transparent?: 1]
+  import ElixirKeeb.Usb.Keycodes, only: [transparent?: 1, normal?: 1, modifier?: 1]
 
   defmacro toggle_layer(layer) when is_integer(layer) do
     quote do
@@ -24,6 +24,20 @@ defmodule ElixirKeeb.Layout do
       %KeycodeBehavior{
         action: :lock,
         layer: unquote(layer)
+      }
+    end
+  end
+
+  defmacro tap_or_toggle(tap, toggle)
+  when normal?(tap) and (normal?(toggle) or modifier?(toggle) or is_integer(toggle)) do
+    quote do
+      %KeycodeBehavior{
+        action: :tap_or_toggle,
+        tap_or_toggle: %{
+          tap: unquote(tap),
+          toggle: unquote(toggle),
+          type: :regular
+        }
       }
     end
   end

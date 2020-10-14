@@ -8,7 +8,8 @@ defmodule ElixirKeeb.Structs.ReporterState do
     :previous_layer,
     :layer,
     :activity,
-    :recordings
+    :recordings,
+    :tap_or_toggle_pending
   ]
 
   @enforce_keys @fields
@@ -22,7 +23,8 @@ defmodule ElixirKeeb.Structs.ReporterState do
         previous_layer: 0,
         layer: 0,
         activity: :regular,
-        recordings: %{}
+        recordings: %{},
+        tap_or_toggle_pending: %{}
       }
   end
 end

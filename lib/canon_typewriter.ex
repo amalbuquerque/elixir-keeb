@@ -55,7 +55,7 @@ defmodule ElixirKeeb.CanonTypewriter.Layout do
       [:kc_lctrl, :kc_a, :kc_s, :kc_d, :kc_f, :kc_g, :kc_h, :kc_j, :kc_k, :kc_l, :kc_scolon, :kc_quote, :kc_lgui, :kc_enter],
       # 1st position (kc_lshift) needs to be identical to the last one,
       # since the matrix has the same line and column pin on both positions
-      [:kc_lshift, :kc_z, :kc_x, :kc_c, :kc_v, :kc_b, :kc_n, :kc_m, :kc_comma, :kc_dot, :kc_grave, :kc_lshift],
+      [:kc_lshift, :kc_z, tap_or_toggle(:kc_x, :kc_lshift), :kc_c, :kc_v, :kc_b, :kc_n, :kc_m, :kc_comma, :kc_dot, :kc_grave, :kc_lshift],
       [:kc_lalt, :kc_space, :kc_ralt]
     ],
     [ # layer 1
