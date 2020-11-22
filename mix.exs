@@ -2,7 +2,7 @@ defmodule ElixirKeeb.MixProject do
   use Mix.Project
 
   @app :elixir_keeb
-  @version "0.1.0"
+  @version "0.2.0"
   @all_targets [:rpi0, :rpi0_hid]
 
   def project do
@@ -10,22 +10,14 @@ defmodule ElixirKeeb.MixProject do
       app: @app,
       version: @version,
       elixir: "~> 1.9",
-      archives: [nerves_bootstrap: "~> 1.6"],
+      archives: [nerves_bootstrap: "~> 1.10"],
       start_permanent: Mix.env() == :prod,
       build_embedded: true,
-      aliases: [loadconfig: [&bootstrap/1]],
       deps: deps(),
       elixirc_paths: elixirc_paths(Mix.env()),
       releases: [{@app, release()}],
       preferred_cli_target: [run: :host, test: :host]
     ]
-  end
-
-  # Starting nerves_bootstrap adds the required aliases to Mix.Project.config()
-  # Aliases are only added if MIX_TARGET is set.
-  def bootstrap(args) do
-    Application.start(:nerves_bootstrap)
-    Mix.Task.run("loadconfig", args)
   end
 
   # Run "mix help compile.app" to learn about applications.
@@ -42,25 +34,28 @@ defmodule ElixirKeeb.MixProject do
   defp deps do
     [
       # Dependencies for all targets
-      {:nerves, "~> 1.5.0", runtime: false},
-      {:shoehorn, "~> 0.6"},
-      {:ring_logger, "~> 0.6"},
-      {:toolshed, "~> 0.2"},
+      {:nerves, "~> 1.7.0", runtime: false},
+      {:shoehorn, "~> 0.7.0"},
+      {:ring_logger, "~> 0.8.1"},
+      {:toolshed, "~> 0.2.13"},
       {:httpoison, "~> 1.7.0"},
       {:jason, "~> 1.2.2"},
 
       # Dependencies for all targets except :host
-      {:nerves_runtime, "~> 0.6", targets: @all_targets},
+      {:nerves_runtime, "~> 0.11.3", targets: @all_targets},
+      {:nerves_pack, "~> 0.4.0", targets: @all_targets},
+      {:elixir_keeb_ui, path: "../elixir_keeb_ui", targets: @all_targets},
+
       {:nerves_init_gadget, "~> 0.4", targets: @all_targets},
       {:usb_gadget, git: "https://github.com/nerves-project/usb_gadget.git", branch: "master", targets: @all_targets},
       {:circuits_gpio, "~> 0.4.3", targets: @all_targets},
 
       # Dependencies for specific targets
-      {:nerves_system_rpi0, "~> 1.8", runtime: false, targets: :rpi0},
+      {:nerves_system_rpi0, "~> 1.13", runtime: false, targets: :rpi0},
       {:nerves_system_rpi0_hid, path: "../nerves_custom_rpi0", runtime: false, targets: :rpi0_hid, nerves: [compile: true]},
+
       {:mix_test_watch, "~> 1.0.2", only: :test},
       {:mox, "~> 0.5.2", only: :test},
-      {:elixir_keeb_ui, path: "../elixir_keeb_ui", targets: @all_targets},
     ]
   end
 
