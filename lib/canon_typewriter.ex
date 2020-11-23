@@ -15,8 +15,25 @@ defmodule ElixirKeeb.CanonTypewriter.Matrix do
 end
 
 defmodule ElixirKeeb.CanonTypewriter.Macros do
-  def my_macro(state) do
-    {"Hello from macro function!", state}
+  def network_info_macro(state) do
+    :ok = VintageNet.info()
+
+    all_interfaces = VintageNet.all_interfaces()
+    current_config = VintageNet.get_configuration("wlan0")
+
+    message = "VintageNet.info! Interfaces: #{inspect(all_interfaces)}, Current config: #{inspect(current_config)}"
+
+    {message, state}
+  end
+
+  def configure_network_macro(state) do
+    [{"wlan0", config} | _] = Application.get_env(:vintage_net, :config)
+
+    result = VintageNet.configure("wlan0", config)
+
+    message = "Just configured with: #{inspect(config)}. Result: #{inspect(result)}"
+
+    {message, state}
   end
 end
 
@@ -45,7 +62,9 @@ defmodule ElixirKeeb.CanonTypewriter.Layout do
     # macro 3
     "Hello, world!",
     # macro 4
-    &ElixirKeeb.CanonTypewriter.Macros.my_macro/1,
+    &ElixirKeeb.CanonTypewriter.Macros.network_info_macro/1,
+    # macro 5
+    &ElixirKeeb.CanonTypewriter.Macros.configure_network_macro/1,
   ]
 
   @layouts [
@@ -62,7 +81,7 @@ defmodule ElixirKeeb.CanonTypewriter.Layout do
       [:____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____],
       [:____, :kc_1, :kc_2, :kc_3, :kc_4, :kc_5, :kc_6, :kc_7, :kc_8, :kc_9, :kc_0, :kc_tab, :kc_bslash, :____],
       [:____, m(0), m(1), m(2), m(3), m(4), record(0), replay(0), :____, :____, :____, :____, :____, :____],
-      [:____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____, :____],
+      [:____, :____, :____, m(5), :____, :____, :____, :____, :____, :____, :____, :____],
       [:____, :kc_x, :____]
     ]
   ]

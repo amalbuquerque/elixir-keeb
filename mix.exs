@@ -11,6 +11,7 @@ defmodule ElixirKeeb.MixProject do
       version: @version,
       elixir: "~> 1.9",
       archives: [nerves_bootstrap: "~> 1.10"],
+      aliases: [loadconfig: [&bootstrap/1]],
       start_permanent: Mix.env() == :prod,
       build_embedded: true,
       deps: deps(),
@@ -28,6 +29,11 @@ defmodule ElixirKeeb.MixProject do
     ]
   end
 
+  defp bootstrap(args) do
+    Application.start(:nerves_bootstrap)
+    Mix.Task.run("loadconfig", args)
+  end
+
   defp elixirc_paths(:test), do: ["test/support", "lib"]
   defp elixirc_paths(_), do: ["lib"]
 
@@ -42,11 +48,11 @@ defmodule ElixirKeeb.MixProject do
       {:jason, "~> 1.2.2"},
 
       # Dependencies for all targets except :host
+      {:vintage_net_wifi, "~> 0.9.1", targets: @all_targets},
       {:nerves_runtime, "~> 0.11.3", targets: @all_targets},
-      {:nerves_pack, "~> 0.4.0", targets: @all_targets},
+      {:nerves_pack, "~> 0.4.1", targets: @all_targets},
       {:elixir_keeb_ui, path: "../elixir_keeb_ui", targets: @all_targets},
 
-      {:nerves_init_gadget, "~> 0.4", targets: @all_targets},
       {:usb_gadget, git: "https://github.com/nerves-project/usb_gadget.git", branch: "master", targets: @all_targets},
       {:circuits_gpio, "~> 0.4.3", targets: @all_targets},
 

@@ -1,15 +1,21 @@
 use Mix.Config
 
-config :nerves_network,
-  regulatory_domain: "EU"
-
-config :nerves_network, :default,
-  wlan0: [
-    networks: [
-      [
-        ssid: System.get_env("NERVES_NETWORK_SSID"),
-        psk: System.get_env("NERVES_NETWORK_PSK"),
-        key_mgmt: :"WPA-PSK"
-      ]
-    ]
+config :vintage_net,
+  regulatory_domain: "EU",
+  config: [
+    {"wlan0",
+      %{
+        type: VintageNetWiFi,
+        vintage_net_wifi: %{
+          networks: [
+            %{
+              key_mgmt: :wpa_psk,
+              ssid: System.get_env("NERVES_NETWORK_SSID"),
+              psk: System.get_env("NERVES_NETWORK_PSK"),
+            }
+          ]
+        },
+        ipv4: %{method: :dhcp},
+      }
+    }
   ]
