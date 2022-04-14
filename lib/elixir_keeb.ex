@@ -13,6 +13,6 @@ defmodule ElixirKeeb do
 
   """
   def hello do
-    [:world, "2020/11/22 22:09:16 @ Home, after Nerves upgrade"]
+    [:world, "2021/02/27 20:26:41 @ Home, while trying to create a virtual Ethernet adapter"]
   end
 end

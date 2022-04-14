@@ -3,7 +3,12 @@ defmodule ElixirKeeb.Application do
 
   use Application
 
+  # TODO: Temporarily don't start anything
   def start(_type, _args) do
+    Supervisor.start_link([], [strategy: :one_for_one, name: ElixirKeeb.DummySupervisor])
+  end
+
+  def _start(_type, _args) do
     device = configure_device(target())
 
     opts = [strategy: :one_for_one, name: ElixirKeeb.Supervisor]
@@ -27,6 +32,7 @@ defmodule ElixirKeeb.Application do
 
   def configure_device(:host), do: :no_device
   def configure_device(_target) do
+    # TODO: Not configuring it automatically
     ElixirKeeb.Usb.Gadget.configure_device()
   end
 

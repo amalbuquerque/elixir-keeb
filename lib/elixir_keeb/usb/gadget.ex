@@ -17,17 +17,37 @@ defmodule ElixirKeeb.Usb.Gadget do
 
   @report_descriptor "\x05\x01\x09\x06\xa1\x01\x05\x07\x19\xe0\x29\xe7\x15\x00\x25\x01\x75\x01\x95\x08\x81\x02\x95\x01\x75\x08\x81\x03\x95\x05\x75\x01\x05\x08\x19\x01\x29\x05\x91\x02\x95\x01\x75\x03\x91\x03\x95\x06\x75\x08\x15\x00\x25\x65\x05\x07\x19\x00\x29\x65\x81\x00\xc0"
 
+  @gadget_root "/sys/kernel/config/usb_gadget"
+
+  def disable_device do
+    udc = "#{@gadget_root}/#{@device_name}/UDC"
+    # THIS DIDN'T WORK, essentially what USBGadget.disable_device/1 does
+    # iex(17)> File.write(udc, "")
+    # :ok
+    # iex(18)> ls "/sys/class/udc"
+    # 20980000.usb
+    # iex(19)> cat udc
+    # 20980000.usb
+    # USBGadget.disable_device(@device_name)
+
+    # WHILE THIS WORKED
+    # iex(21)> Toolshed.cmd("echo '' > #{udc}")
+    # 0
+    # iex(22)> cat udc
+    # (empty)
+    Toolshed.cmd("echo '' > #{udc}")
+  end
 
   def open_device(device) do
     File.open(device, [:write])
   end
 
   def configure_device do
-    Logger.info("Configuring the USB HID Gadget...")
+    Logger.info("Configuring the USB ECM Gadget... #######!")
 
     :ok = USBGadget.create_device(@device_name, %{
-      "idVendor" => "0x1d6b",
-      "idProduct" => "0x0104",
+      "idVendor" => "0x1d6b", # Linux Foundation
+      "idProduct" => "0x0104", # Ethernet Gadget
       "bcdDevice" => "0x0100",
       "bcdUSB" => "0x200",
       "strings" => %{
@@ -39,22 +59,29 @@ defmodule ElixirKeeb.Usb.Gadget do
       }
     })
 
-    :ok = USBGadget.create_config(@device_name, "c.1", %{
-      "strings" => %{
-        "0x409" => %{
-          "configuration" => "Config 1: HID device"
-        }
-      }
-    })
+    :ok = USBGadget.create_config(@device_name, "c.1")
+    # :ok = USBGadget.create_config(@device_name, "c.1", %{
+    #   "strings" => %{
+    #     "0x409" => %{
+    #       "configuration" => "Config 1: HID + ECM device"
+    #     }
+    #   }
+    # })
 
-    :ok = USBGadget.create_function(@device_name, "hid.usb0", %{
-      "protocol" => "1",
-      "subclass" => "1",
-      "report_length" => "8",
-      "report_desc" => @report_descriptor
-    })
+    # :ok = USBGadget.create_function(@device_name, "hid.usb0", %{
+    #   "protocol" => "1",
+    #   "subclass" => "1",
+    #   "report_length" => "8",
+    #   "report_desc" => @report_descriptor
+    # })
 
-    :ok = USBGadget.link_functions(@device_name, "c.1", ["hid.usb0"])
+    :ok = USBGadget.create_function(@device_name, "ecm.usb0")
+    # :ok = USBGadget.create_function(@device_name, "ecm.usb0", %{
+    #   # TODO
+    # })
+
+    # :ok = USBGadget.link_functions(@device_name, "c.1", ["hid.usb0", "ecm.usb0"])
+    :ok = USBGadget.link_functions(@device_name, "c.1", ["ecm.usb0"])
 
     {:ok, existing_devices} = current_devices()
 

@@ -71,14 +71,18 @@ config :shoehorn,
 
 config :logger, backends: [
   RingLogger,
-  {ElixirKeeb.Communication.PhoenixChannelLoggerBackend, :keyboard}
+  {ElixirKeeb.Communication.PhoenixChannelLoggerBackend, :keyboard},
+  :console
 ]
 
 config :logger,
-  compile_time_purge_matching: [
-      [level_lower_than: :info]
-  ],
-  level: :info
+  # compile_time_purge_matching: [
+  #     [level_lower_than: :info]
+  # ],
+  level: :debug
+
+config :logger, :console,
+  metadata: :all
 
 config :logger, :keyboard,
   module: ElixirKeeb.UIWeb.Keyboard,
