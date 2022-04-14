@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :elixir_keeb, :modules,
   gadget: ElixirKeeb.Usb.GadgetMock,

@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :vintage_net,
   regulatory_domain: "EU",

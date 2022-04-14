@@ -54,6 +54,7 @@ This will upload the firmware via SSH (check your keyboard IP on your router):
 2. `export MIX_TARGET=rpi0_hid`
 3. `export NERVES_NETWORK_PSK=<password>`
 4. `export NERVES_NETWORK_SSID=<ssid>`
+4.1. `export WEATHER_API_KEY=<weather-api-key>`
 5. `mix firmware`
 6. `./upload.sh <keeb IP> /home/andre/projs/personal/elixir_keeb/_build/rpi0_hid_prod/nerves/images/elixir_keeb.fw`
 

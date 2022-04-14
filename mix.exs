@@ -57,11 +57,13 @@ defmodule ElixirKeeb.MixProject do
       {:circuits_gpio, "~> 0.4.3", targets: @all_targets},
 
       # Dependencies for specific targets
-      {:nerves_system_rpi0, "~> 1.13", runtime: false, targets: :rpi0},
+      {:nerves_system_rpi0, "~> 1.18", runtime: false, targets: :rpi0},
       {:nerves_system_rpi0_hid, path: "../nerves_custom_rpi0", runtime: false, targets: :rpi0_hid, nerves: [compile: true]},
+      {:nerves_system_br, "1.18.6", override: true},
+      {:nerves_toolchain_ctng, "1.8.5", override: true},
 
       {:mix_test_watch, "~> 1.0.2", only: :test},
-      {:mox, "~> 0.5.2", only: :test},
+      {:mox, "~> 0.5.2", only: :test}
     ]
   end
 
