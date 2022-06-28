@@ -13,6 +13,6 @@ defmodule ElixirKeeb do
 
   """
   def hello do
-    [:world, "2020/11/22 22:09:16 @ Home, after Nerves upgrade"]
+    [:world, "2022/04/14 23:38:34 @ Home, after Elixir+OTP+Nerves upgrade"]
   end
 end

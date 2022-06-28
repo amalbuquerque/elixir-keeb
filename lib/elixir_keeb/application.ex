@@ -1,9 +1,15 @@
 defmodule ElixirKeeb.Application do
   @moduledoc false
 
+  require Logger
+
   use Application
 
   def start(_type, _args) do
+    Logger.info("⌨️  Starting ElixirKeeb 2022/06/27 22:32:05 ⌨️,")
+
+    configure_wifi(target())
+
     device = configure_device(target())
 
     opts = [strategy: :one_for_one, name: ElixirKeeb.Supervisor]
@@ -46,5 +52,18 @@ defmodule ElixirKeeb.Application do
 
   def target() do
     Application.get_env(:elixir_keeb, :target)
+  end
+
+  def configure_wifi(:host), do: :no_device
+  def configure_wifi(_target) do
+    [{"wlan0", config} | _] = Application.get_env(:vintage_net, :config)
+
+    Logger.info("Configuring wi-fi with #{inspect(config)}")
+
+    result = VintageNet.configure("wlan0", config)
+
+    Logger.info("Just configured wi-fi. Result: #{inspect(result)}")
+
+    result
   end
 end
