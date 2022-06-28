@@ -1,12 +1,12 @@
 import Config
 
 config :vintage_net,
-  regulatory_domain: "EU",
   config: [
     {"wlan0",
       %{
         type: VintageNetWiFi,
         vintage_net_wifi: %{
+          regulatory_domain: "EU",
           networks: [
             %{
               key_mgmt: :wpa_psk,
