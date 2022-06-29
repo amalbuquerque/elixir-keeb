@@ -3,7 +3,7 @@ defmodule ElixirKeeb.MixProject do
 
   @app :elixir_keeb
   @version "0.2.0"
-  @all_targets [:rpi0, :rpi0_hid]
+  @all_targets [:rpi0, :rpi0_configfs]
 
   def project do
     [
@@ -40,27 +40,28 @@ defmodule ElixirKeeb.MixProject do
   defp deps do
     [
       # Dependencies for all targets
-      {:nerves, "~> 1.7.0", runtime: false},
-      {:shoehorn, "~> 0.7.0"},
-      {:ring_logger, "~> 0.8.1"},
+      {:nerves, "~> 1.7.15", runtime: false},
+      {:shoehorn, "~> 0.8.0"},
+      {:ring_logger, "~> 0.8.3"},
       {:toolshed, "~> 0.2.13"},
       {:httpoison, "~> 1.7.0"},
       {:jason, "~> 1.2.2"},
 
       # Dependencies for all targets except :host
-      {:vintage_net_wifi, "~> 0.9.1", targets: @all_targets},
-      {:nerves_runtime, "~> 0.11.3", targets: @all_targets},
-      {:nerves_pack, "~> 0.4.1", targets: @all_targets},
+      {:vintage_net_wifi, "~> 0.10", targets: @all_targets},
+      {:nerves_runtime, "~> 0.11.6", targets: @all_targets},
+      {:nerves_pack, "~> 0.6.0", targets: @all_targets},
       {:elixir_keeb_ui, path: "../elixir_keeb_ui", targets: @all_targets},
 
       {:usb_gadget, git: "https://github.com/nerves-project/usb_gadget.git", branch: "master", targets: @all_targets},
-      {:circuits_gpio, "~> 0.4.3", targets: @all_targets},
+      {:circuits_gpio, "~> 1.0", targets: @all_targets},
 
       # Dependencies for specific targets
       {:nerves_system_rpi0, "~> 1.18", runtime: false, targets: :rpi0},
-      {:nerves_system_rpi0_hid, path: "../nerves_custom_rpi0", runtime: false, targets: :rpi0_hid, nerves: [compile: true]},
-      {:nerves_system_br, "1.18.6", override: true},
-      {:nerves_toolchain_ctng, "1.8.5", override: true},
+      {:nerves_system_rpi0_configfs, path: "../nerves_system_configfs_rpi0", runtime: false, targets: :rpi0_configfs, nerves: [compile: true]},
+
+      {:nerves_system_br, "~> 1.20.3", override: true},
+      {:nerves_toolchain_armv6_nerves_linux_gnueabihf, "~> 1.6", override: true},
 
       {:mix_test_watch, "~> 1.0.2", only: :test},
       {:mox, "~> 0.5.2", only: :test}
