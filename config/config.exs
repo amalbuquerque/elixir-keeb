@@ -25,8 +25,8 @@ config :elixir_keeb,
     {:A8, 23},
     {:A7, 24},
     {:A6, 25},
-    {:A5, 8},
-    {:A4, 7},
+    {:A5, 1}, # moved to GPIO 1 from 8
+    {:A4, 21}, # moved to GPIO 21 from 7
     {:A3, 12},
     {:A2, 16},
     {:A1, 20}

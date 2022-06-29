@@ -18,7 +18,6 @@ This firmware supports:
 
 - Special recording macro that stores the keypresses in a stack, useful to obtain input from the user;
 - Redefine layout without having to burn firmware again;
-- Bump Nerves versions;
 - Use Gitlab Actions for CI;
 - Tap to send a key press, keep pressed to activate a layer or send a modifier;
 
@@ -31,32 +30,17 @@ This firmware supports:
 
 ## Build steps
 
-At the moment I'm using Erlang 22.0.7 and Elixir 1.9.4. Use them with `asdf` like this, just before compiling the firmware:
-
-```
-❯ asdf list erlang
-  21.3
-  22.0.7
-
-❯ asdf list elixir
-  1.10.3-otp-22
-  1.8.1-otp-21
-  1.9.4-otp-22
-
-❯ asdf local erlang 22.0.7
-
-❯ asdf local elixir 1.9.4-otp-22
-```
+At the moment I'm using Erlang 25.0.2 and Elixir 1.13.4. Use them with `asdf` like this, just before compiling the firmware. Check the `.tool-versions` file.
 
 This will upload the firmware via SSH (check your keyboard IP on your router):
 
 1. `export MIX_ENV=prod`
-2. `export MIX_TARGET=rpi0_hid`
+2. `export MIX_TARGET=rpi0_configfs`
 3. `export NERVES_NETWORK_PSK=<password>`
 4. `export NERVES_NETWORK_SSID=<ssid>`
 4.1. `export WEATHER_API_KEY=<weather-api-key>`
 5. `mix firmware`
-6. `./upload.sh <keeb IP> /home/andre/projs/personal/elixir_keeb/_build/rpi0_hid_prod/nerves/images/elixir_keeb.fw`
+6. `./upload.sh <keeb IP> /home/andre/projs/personal/elixir_keeb/_build/rpi0_configfs_prod/nerves/images/elixir_keeb.fw`
 
 ## Debugging
 
@@ -67,7 +51,7 @@ You can check the web dashboard on `<keeb IP>:4000`
 If it borked the SSH connection, insert the micro SD card on the PC and burn the firmware to it:
 
 1. `export MIX_ENV=dev`
-2. `export MIX_TARGET=rpi0_hid`
+2. `export MIX_TARGET=rpi0_configfs`
 3. `export NERVES_NETWORK_SSID=<ssid>`
 4. `export NERVES_NETWORK_PSK=<password>`
 5. `mix firmware.burn`
